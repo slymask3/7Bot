@@ -1,0 +1,23 @@
+legend:
+- == todo
+/ == done
+
+7bot todo:
+/ name: create original name for the site (7Bot) (Easy Stats) (Easy Ranked Stats) (LolLookup)
+- limit: limit ammounts of games added per ip address?
+- top list: take all info from database to create top list (for each region?)
+/ new stat: time played ranked
+/ time estimate: estimated time to add games
+/ confirm button: confirm to add games
+/ all seasons tab: merge all tables
+/ match.php: matches table?
+/ a way to fix riot api's fuckups with correct lane (add a checker for some things, i.e. no doubles of lanes. if player has smite, then theyre more likely the jungler, etc.)
+/ pages: limit amount of rows seen at once, customizable by the user
+/ bring back the stats. on seperate page? more indepth?
+/ games: update the games table to be skinnier to look better on smaller resolutions.
+- fix the matches and games with 3v3 twisted treeline games.
+/ add keystones into the games and matches.
+/ re-add a way to change the user ordering for the table.
+- add a confirm button to match.php
+- convert match.php to grab and set player's info from their own table instead of storing everyones info in the matches table.
+/ change all the calls to the static riot api to get champion names from their ids. instead use our local champions table. (should speed a lot of shit up) (Update: Sped it up indeed, except had to add manual sleep() or we will exceed the api limit.)
