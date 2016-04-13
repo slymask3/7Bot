@@ -4,11 +4,20 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
 
     echo '<div class="gamestable-search-order">';
 
-    echo '<input class="search-games" id="search-champion" placeholder="Search Champions" />
-          <input class="search-games" id="search-enemy" placeholder="Search Opponents" />
+    echo '
+          <label for="search-lane">Lane:</label>
+          <input class="search-games" id="search-lane" placeholder="" />
+          <label for="search-champion">Champion:</label>
+          <input class="search-games" id="search-champion" placeholder="" />
+          <label for="search-enemy">Opponent:</label>
+          <input class="search-games" id="search-enemy" placeholder="" />
+          <div style="float: right">
+          <label for="pages"># of Games Per Page:</label>
           <input class="search-games" id="pages" type="number" placeholder="Games Per Page" value="50" min="1" max="9999" />
+          </div>
           <br>
-          <button class="sort" data-sort="sort-champion">Champion</button>
+          <label for="ord">Order:</label>
+          <button class="sort" data-sort="sort-champion" id="ord">Champion</button>
           <button class="sort" data-sort="sort-enemy">Opponent</button>
           <button class="sort" data-sort="sort-kills">Kills</button>
           <button class="sort" data-sort="sort-deaths">Deaths</button>
@@ -21,6 +30,8 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
           <button class="sort" data-sort="sort-csm">CS/min</button>
           <button class="sort" data-sort="sort-date">Date</button>
           <button class="sort" data-sort="sort-length">Length</button>
+          <button class="sort" data-sort="sort-cc">CCS</button>
+          <button class="sort" data-sort="sort-7bs">7BS</button>
           <br>';
 
     echo '<b>Loaded '.$resultlimit->rowCount().' Games in this Queue.</b> ';
@@ -80,9 +91,12 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
     echo '<div class="game-date">';
     echo 'Game Length: <span id="avg-length">'.$time.'</span>';
     echo '</div>';
-
+    echo '<div class="game-team">';
+    echo '<span class="game-7bs" data-toggle="tooltip" data-placement="top" title="7 Bot Score">7BS: <span id="avg-7bs">0</span></span> ';
     echo '</div>';
-    echo '<div class="game-more" id="matchavg-more">';
+    echo '<div class="game-wards">';
+    echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score">CCS: <span id="avg-cc">0</span></span>';
+    echo '</div>';
     echo '</div>';
     echo '</div>';
 
@@ -113,6 +127,12 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
     echo '</div>';
     echo '<div class="game-date">';
     echo 'Game Length: <span id="avg-length-f">'.$time.'</span>';
+    echo '</div>';
+    echo '<div class="game-team">';
+    echo '<span class="game-7bs" data-toggle="tooltip" data-placement="top" title="7 Bot Score">7BS: <span id="avg-7bs-f">0</span></span> ';
+    echo '</div>';
+    echo '<div class="game-wards">';
+    echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score">CCS: <span id="avg-cc-f">0</span></span>';
     echo '</div>';
     echo '</div>';
     echo '</div>';
@@ -149,6 +169,7 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
         $row['CS/min'] = round($row['CS']/($row['Length']/60), 2);
         $row['K/min'] = round($row['K']/($row['Length']/60), 2);
         $row['D/min'] = round($row['D']/($row['Length']/60), 2);
+        $row['A/min'] = round($row['A']/($row['Length']/60), 2);
         $row['teamid'] = $match['participants'][$row['pid']]['teamId'];
         $row['W/L'] = ($match['participants'][$row['pid']]['stats']['winner'] ? 'Win' : 'Loss');
 
@@ -226,6 +247,8 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
         $pinkwardsbought = $match['participants'][$row['pid']]['stats']['visionWardsBoughtInGame'];
         $wardsplaced = $match['participants'][$row['pid']]['stats']['wardsPlaced'];
         $wardsdestroyed = $match['participants'][$row['pid']]['stats']['wardsKilled'];
+
+        $cc = $match['participants'][$row['pid']]['stats']['totalTimeCrowdControlDealt'];
 
         $color = "";
 
@@ -313,11 +336,12 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
 
 //        echo '<div class="sort-date">'.$row['Ch'].'</div>';
         echo '<div class="sort-length" style="display: none;">'.$row['Length'].'</div>';
+        echo '<div class="sort-lane" style="display: none;">'.$lane.'</div>';
         echo '<div class="sort-champion" style="display: none;">'.$row['champion'].'</div>';
         echo '<div class="sort-enemy" style="display: none;">'.$enemy['name'].'</div>';
 
-        echo '<div class="game game-'.strtolower($row['W/L']).'" onclick="toggleMatch('.$row['matchid'].')" id="game-number-'.($gamenumberid).'">';
-        echo '<div class="game-info">';
+        echo '<div class="game game-'.strtolower($row['W/L']).'" id="game-number-'.($gamenumberid).'">';
+        echo '<div class="game-info" onclick="toggleMatch('.$row['matchid'].')">';
         echo '<div class="game-lane">';
         echo '<a href="match.php?r='.$region.'&match='.$row['matchid'].'&player='.$userid.'" target="_blank">'.getLaneIMG($lane, 40, 40).'</a>';
         echo '</div>';
@@ -342,8 +366,10 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
         echo getItemIMG($row['T'], $i7);
         echo '</div>';
         echo '<div class="game-kda">';
-        echo '<span class="sort-kills">'.$row['K'].'</span> / <span class="sort-deaths">'.$row['D'].'</span> / <span class="sort-assists">'.$row['A'].'</span>';
-        echo '<div style="font-size: smaller"><span class="sort-kda">'.round(($row['K']+$row['A'])/$row['D'], 2).'</span>:1 KDA</div>';
+        echo '<span class="sort-kills" data-toggle="tooltip" data-placement="top" title="'.$row['K/min'].'/min">'.$row['K'].'</span> /
+              <span class="sort-deaths" data-toggle="tooltip" data-placement="top" title="'.$row['D/min'].'/min">'.$row['D'].'</span> /
+              <span class="sort-assists" data-toggle="tooltip" data-placement="top" title="'.$row['A/min'].'/min">'.$row['A'].'</span>';
+        echo '<div style="font-size: smaller"><span class="sort-kda">'.($row['D']==0?$row['K']+$row['A']:round(($row['K']+$row['A'])/$row['D'], 2)).'</span>:1 KDA</div>';
         echo '</div>';
         echo '<div class="game-damage">';
         echo getUiIMG('score').'Damage: <span class="sort-damage">'.$row['Damage'].'</span> ';
@@ -368,11 +394,15 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
         echo '<span class="game-number" data-toggle="tooltip" data-placement="top" title="'.$number.getOrdinal($number).' Game Played in this Queue">'.$number.'</span>';
         echo '</div>';
         echo '<div class="game-wards">';
+        echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score">CCS: <span class="sort-cc cc-color">'.$cc.'</span></span> - ';
         echo '<span style="color: #00ab00" data-toggle="tooltip" data-placement="top" title="Wards/Trinkets Placed">' .$wardsplaced.getUiIMG('ward_green').'</span> ';
         echo '<span style="color: #ff4121" data-toggle="tooltip" data-placement="top" title="Wards/Trinkets Destroyed">' .$wardsdestroyed.getUiIMG('ward_destroy').'</span> ';
         echo '<span style="color: hotpink" data-toggle="tooltip" data-placement="top" title="Pink Wards Bought">'.$pinkwardsbought.getUiIMG('ward_pink').'</span>';
         echo '</div>';
         echo '<div class="game-team">';
+        echo '<span class="game-7bs" data-toggle="tooltip" data-placement="top" title="7 Bot Score (IN EARLY ALPHA STAGE)">7BS: <span class="sort-7bs 7bs-color">'.
+                get7BS($lane, $row['K/min'],$row['D/min'],$row['A/min'],$row['Dmg/min'],$row['Gold/min'],$row['CS/min'],$wardsplaced, $wardsdestroyed, $pinkwardsbought, $cc)
+            .'</span></span> ';
         echo getTeamIMG($row['teamid']);
         echo '</div>';
         echo '</div>';

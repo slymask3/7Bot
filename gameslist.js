@@ -1,5 +1,6 @@
 var options = {
-    valueNames: [ 'sort-champion',
+    valueNames: [ 'sort-lane',
+                  'sort-champion',
                   'sort-enemy',
                   'sort-kp',
                   'sort-dp',
@@ -14,7 +15,9 @@ var options = {
                   'sort-goldm',
                   'sort-csm',
                   'sort-date',
-                  'sort-kda' ],
+                  'sort-kda',
+                  'sort-7bs',
+                  'sort-cc' ],
     page: document.getElementById("pages").value,
     plugins: [
       ListPagination({})
@@ -38,6 +41,8 @@ function fullAvg() {
     dmgma = 0;
     goldma = 0;
     csma = 0;
+    score = 0;
+    cc = 0;
     for(i=0; i<userList.items.length; i++) {
         kpa += parseFloat(userList.items[i]['_values']['sort-kp']);
         dpa += parseFloat(userList.items[i]['_values']['sort-dp']);
@@ -51,6 +56,8 @@ function fullAvg() {
         dmgma += parseFloat(userList.items[i]['_values']['sort-damagem']);
         goldma += parseFloat(userList.items[i]['_values']['sort-goldm']);
         csma += parseFloat(userList.items[i]['_values']['sort-csm']);
+        score += parseFloat(userList.items[i]['_values']['sort-7bs']);
+        cc += parseFloat(userList.items[i]['_values']['sort-cc']);
     }
     kpa /= userList.items.length;
     dpa /= userList.items.length;
@@ -64,6 +71,8 @@ function fullAvg() {
     dmgma /= userList.items.length;
     goldma /= userList.items.length;
     csma /= userList.items.length;
+    score /= userList.items.length;
+    cc /= userList.items.length;
 
     lengthat = getTime(lengtha);
 
@@ -79,6 +88,8 @@ function fullAvg() {
     document.getElementById("avg-damagem").innerHTML = dmgma.toFixed(2);
     document.getElementById("avg-goldm").innerHTML = goldma.toFixed(2);
     document.getElementById("avg-csm").innerHTML = csma.toFixed(2);
+    document.getElementById("avg-7bs").innerHTML = score.toFixed(2);
+    document.getElementById("avg-cc").innerHTML = cc.toFixed(2);
 
     document.getElementById("avg-kda").innerHTML = ((ka+aa)/da).toFixed(2);
 
@@ -98,6 +109,8 @@ userList.on("updated", function(){
     dmgmaf = 0;
     goldmaf = 0;
     csmaf = 0;
+    scoref = 0;
+    ccf = 0;
     for(i=0; i<userList.matchingItems.length; i++) {
         kpaf += parseFloat(userList.matchingItems[i]['_values']['sort-kp']);
         dpaf += parseFloat(userList.matchingItems[i]['_values']['sort-dp']);
@@ -111,6 +124,8 @@ userList.on("updated", function(){
         dmgmaf += parseFloat(userList.matchingItems[i]['_values']['sort-damagem']);
         goldmaf += parseFloat(userList.matchingItems[i]['_values']['sort-goldm']);
         csmaf += parseFloat(userList.matchingItems[i]['_values']['sort-csm']);
+        scoref += parseFloat(userList.matchingItems[i]['_values']['sort-7bs']);
+        ccf += parseFloat(userList.matchingItems[i]['_values']['sort-cc']);
     }
     kpaf /= userList.matchingItems.length;
     dpaf /= userList.matchingItems.length;
@@ -124,6 +139,8 @@ userList.on("updated", function(){
     dmgmaf /= userList.matchingItems.length;
     goldmaf /= userList.matchingItems.length;
     csmaf /= userList.matchingItems.length;
+    scoref /= userList.matchingItems.length;
+    ccf /= userList.matchingItems.length;
 
     lengthatf = getTime(lengthaf);
 
@@ -142,6 +159,8 @@ userList.on("updated", function(){
             getClass(i, "csm-color").className += getClassColor(i, "sort-csm", csmaf);
             getClass(i, "kp-color").className += getClassColor(i, "sort-kp", kpaf);
             getClass(i, "dp-color").className += getClassColorI(i, "sort-dp", dpaf);
+            getClass(i, "7bs-color").className += getClassColor(i, "sort-7bs", scoref);
+            getClass(i, "cc-color").className += getClassColor(i, "sort-cc", ccf);
         }catch(err){
             //console.log(i+" Failed");
         }
@@ -159,6 +178,8 @@ userList.on("updated", function(){
     document.getElementById("avg-damagem-f").innerHTML = dmgmaf.toFixed(2);
     document.getElementById("avg-goldm-f").innerHTML = goldmaf.toFixed(2);
     document.getElementById("avg-csm-f").innerHTML = csmaf.toFixed(2);
+    document.getElementById("avg-7bs-f").innerHTML = scoref.toFixed(2);
+    document.getElementById("avg-cc-f").innerHTML = ccf.toFixed(2);
 
     document.getElementById("avg-kda-f").innerHTML = ((kaf+aaf)/daf).toFixed(2);
 
@@ -190,6 +211,9 @@ document.getElementById("search-enemy").onkeyup=function(){
 };
 document.getElementById("search-champion").onkeyup=function(){
     userList.search(document.getElementById("search-champion").value, ['sort-champion']);
+};
+document.getElementById("search-lane").onkeyup=function(){
+    userList.search(document.getElementById("search-lane").value, ['sort-lane']);
 };
 
 document.getElementById("pages").onchange=function(){

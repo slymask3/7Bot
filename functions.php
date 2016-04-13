@@ -1033,4 +1033,21 @@ function getOrdinal($num) {
     return $ord;
 }
 
+function get7BS($lane, $k, $d, $a, $dmg, $gold, $cs, $wardp, $wardd, $pink, $cc) {
+    $score = 0;
+
+    $score += ($lane=='Support' ? $k*300 : $k*50);
+    $score -= ($d*50);
+    $score += ($a*30);
+    $score += ($dmg*0.5);
+    $score += ($gold*1);
+    $score += ($lane=='Support' || $lane=='Jungle' ? $cs*300 : $cs*50);
+    $score += ($wardp*50);
+    $score += ($wardd*20);
+    $score += ($pink*100);
+    $score += ($cc*0.10);
+
+    return round($score, 0);
+}
+
 ?>

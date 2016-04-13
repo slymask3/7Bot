@@ -1219,6 +1219,9 @@ display: block;
     text-align: center;
 
 }
+.game-7bs {
+    text-decoration: underline;
+}
 .game-damage {
     /*display: inline-block;*/
     /*width: 100px;*/
@@ -1526,7 +1529,7 @@ display: block;
     /*border-bottom-left-radius: 5px;*/
     /*border-bottom-right-radius: 5px;*/
     /*border: none;*/
-    text-align: center;
+    text-align: left;
     color: #696969;
 }
 
