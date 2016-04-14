@@ -44,7 +44,7 @@ $account = $accres->fetchAll()[0];
 $displayname = $account['displayname'];
 $icon = $account['icon'];
 $tier = $account['tier'];
-$rank = $account['tier'].' '.$account['division'].' '.$account['lp'].'LP';
+$rank = getCorrectTier($account['tier']).' '.$account['division'].' '.$account['lp'].'LP';
 $userid = $account['id'];
 //var_dump($account, $icon, $tier, $rank);
 

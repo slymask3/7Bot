@@ -27,6 +27,8 @@ if(empty($username)) {
     echo '</form>';
     echo '</div>';
 } else {
+//    include 'summonerinfo.php';
+
     echo '<div class="search-summoner">';
     echo '<form action="current.php" method="get">';
     foreach ($_GET as $key => $value) {

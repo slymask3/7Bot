@@ -70,7 +70,7 @@ try {
 
                         //$dbtable = strtoupper($region) . '_' . $id['id'] . '_SEASON201' . $season . '_' . strtoupper($queue);
 
-                        $query = createMatchesTableIfNotExists3($region, $seasonCode);
+                        $query = createMatchesTableIfNotExists4($region, $seasonCode);
                         $result = $conn->prepare($query);
                         $result->execute();
 

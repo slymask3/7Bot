@@ -92,31 +92,7 @@ if(empty($username)) {
     echo '</form></div>';
 
     if($accres->rowCount() > 0) {
-        echo '<div class="div text-center" id="header" style="margin: 0 80px 0 0px;">';
-        echo '<h2><img src="http://ddragon.leagueoflegends.com/cdn/6.5.1/img/profileicon/' . $icon . '.png" height="40px" width="40px" class="profileicon"/></h2>&nbsp;&nbsp;';
-        echo '<h2 style="margin: 0px" data-text="'.$displayname.' - ">'.$displayname.'</h2>&nbsp;&nbsp;&nbsp;';
-        echo '<h2><img src="assets/' . $tier . '.png" height="40px" width="40px" /></h2>';
-        echo '<h2 style="margin: 0px" data-text="'.$rank.'">'.$rank.'</h2>';
-        echo '</div>';
-
-        $query39 = "SELECT matchid, c.pic FROM matches_$region LEFT JOIN champions c ON getPInt($accountid, data, '.championId')=c.id
-        WHERE ".accountidEquals($accoutid)." ORDER BY 1 DESC LIMIT 1;";        $result39 = $conn->prepare($query39);
-        $result39->execute();
-        $recentchamppic = $result39->fetchAll()[0][1];
-
-//        $query40 = 'SELECT count(*), c.pic FROM '.$dbtable.' LEFT JOIN champions c ON championid=c.id ORDER BY 1 DESC LIMIT 1;';
-//        $result40 = $conn->prepare($query40);
-//        $result40->execute();
-//        $favchamppic = $result40->fetchAll()[0][1];
-
-        if($result39->rowCount() > 0) {
-            echo '
-            <style>
-            #maincontainer {
-                background-image: url(http://ddragon.leagueoflegends.com/cdn/img/champion/splash/'.$recentchamppic.'_0.jpg);
-            }
-            </style>';
-        }
+        include 'summonerinfo.php';
     }
 
     echo '<div class="search-summoner">';

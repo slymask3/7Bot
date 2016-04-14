@@ -223,6 +223,25 @@ function createMatchesTableIfNotExists2($region) {
     return $query;
 }
 
+function createMatchesTableIfNotExists4($region, $season) {
+    $query = 'CREATE TABLE matches_'.$region.'_'.$season.' ( matchid BIGINT, creation DATE, data JSON, PRIMARY KEY(matchid, creation) )
+PARTITION BY RANGE(MONTH(creation)) (
+  PARTITION jan VALUES LESS THAN (2) ENGINE = MyISAM,
+  PARTITION feb VALUES LESS THAN (3) ENGINE = MyISAM,
+  PARTITION mar VALUES LESS THAN (4) ENGINE = MyISAM,
+  PARTITION apr VALUES LESS THAN (5) ENGINE = MyISAM,
+  PARTITION may VALUES LESS THAN (6) ENGINE = MyISAM,
+  PARTITION jun VALUES LESS THAN (7) ENGINE = MyISAM,
+  PARTITION jul VALUES LESS THAN (8) ENGINE = MyISAM,
+  PARTITION aug VALUES LESS THAN (9) ENGINE = MyISAM,
+  PARTITION sep VALUES LESS THAN (10) ENGINE = MyISAM,
+  PARTITION oct VALUES LESS THAN (11) ENGINE = MyISAM,
+  PARTITION nov VALUES LESS THAN (12) ENGINE = MyISAM,
+  PARTITION `dec` VALUES LESS THAN (13) ENGINE = MyISAM
+);';
+    return $query;
+}
+
 function insertIntoMatches($region, $matchid, $creation, $duration, $type, $mode, $queue, $season, $mapid, $version, $ddver, $platform, $mapid, $winner,
                            $id, $displayname, $lane, $championid, $kills, $deaths, $assists, $damage, $gold, $cs, $spell1id, $spell2id,
                            $item0, $item1, $item2, $item3, $item4, $item5, $item6, $wards, $teamid, $keystone,
@@ -1048,6 +1067,10 @@ function get7BS($lane, $k, $d, $a, $dmg, $gold, $cs, $wardp, $wardd, $pink, $cc)
     $score += ($cc*0.10);
 
     return round($score, 0);
+}
+
+function getCorrectTier($tier) {
+    return $tier=='Platinum'?'Emerald':$tier;
 }
 
 ?>

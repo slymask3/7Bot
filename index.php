@@ -125,7 +125,7 @@ if(!empty($region) && !empty($username)) {
         echo '</div>';
     }
 
-    $updatetext = 'Update';
+    $updatetext = 'Update Games';
     $updatevalue = 'confirm';
     $updatecolor = 'warning';
     if($updatephase == 'confirm') {

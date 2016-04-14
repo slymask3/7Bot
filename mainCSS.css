@@ -407,6 +407,8 @@ body {
 .updatebutton {
     /*padding: 4px;*/
     float: left;
+    top: 100px;
+    position: absolute;
 }
 
 .update form {
@@ -577,7 +579,7 @@ legend.scheduler-border {
 .topinfo {
   position: relative;
   padding: 10px;
-  margin: 5px 0 20px;
+  margin: 13px 0 5px;
   color: #000;
   background: #f3961c;
   border-radius: 10px;
@@ -590,10 +592,10 @@ legend.scheduler-border {
   content: "";
   display: block; /* reduce the damage in FF3.0 */
   position: absolute;
-  bottom: -15px;
+  top: -15px;
   left: 30px;
   width: 0;
-  border-width: 15px 15px 0;
+  border-width: 0 15px 15px;
   border-style: solid;
   border-color: #f3961c transparent;
 }
@@ -673,10 +675,12 @@ legend.scheduler-border {
   -o-filter: blur(2px);
   -ms-filter: blur(2px);
   filter: blur(2px);
-    min-height: 600px;
+    min-height: 500px;
     border-left: 3px black solid;
     border-right: 3px black solid;
     border-bottom: 3px black solid;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
 }
 
 /*.underchart {*/
