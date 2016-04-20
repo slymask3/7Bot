@@ -8,7 +8,8 @@ $query = "SELECT
           CAST(jungle as CHAR) as 'jungle',
           CAST(mid as CHAR) as 'mid',
           CAST(adc as CHAR) as 'adc',
-          CAST(support as CHAR) as 'support'
+          CAST(support as CHAR) as 'support',
+          CAST(team as CHAR) as 'team'
           FROM sideinfo_".$region."_".$seasonCode."
           WHERE summonerid=".$accountid;
 $result = $conn->prepare($query);
@@ -21,6 +22,7 @@ $jungle = json_decode($table[0]['jungle'], true);
 $mid = json_decode($table[0]['mid'], true);
 $adc = json_decode($table[0]['adc'], true);
 $support = json_decode($table[0]['support'], true);
+$team = json_decode($table[0]['team'], true);
 
 //var_dump($champ);
 
@@ -49,21 +51,25 @@ echo '<div class="sideinfo-title">';
 echo 'Most Played Champions:';
 echo '</div>';
 
+$k = 0;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($champ).'</div>';
 foreach($champ as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
-    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], '6.6.1', 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span class="'.($row['kills']>=$ka?'aboveavg':'belowavg').'">'.$row['kills'].'</span>/';
-    echo '<span class="'.($row['deaths']<$da?'aboveavg':'belowavg').'">'.$row['deaths'].'</span>/';
-    echo '<span class="'.($row['assists']>=$aa?'aboveavg':'belowavg').'">'.$row['assists']. '</span>';
+    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
     echo '<div class="sideinfo-row-stats">';
-    echo '<div class="sideinfo-row-damage">'.'Damage: <span class="'.($row['damage']>=$dmga?'aboveavg':'belowavg').'">'.$row['damage'].'</span> (<span class="'.($row['dmgm']>=$dmgma?'aboveavg':'belowavg').'">'.$row['dmgm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-gold">'.'Gold: <span class="'.($row['gold']>=$golda?'aboveavg':'belowavg').'">'.$row['gold'].'</span> (<span class="'.($row['goldm']>=$goldma?'aboveavg':'belowavg').'">'.$row['goldm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-cs">'.'CS: <span class="'.($row['cs']>=$csa?'aboveavg':'belowavg').'">'.$row['cs'].'</span> (<span class="'.($row['csm']>=$csma?'aboveavg':'belowavg').'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
     echo '</div>';
+    $i++;
 }
 echo '</div>';
 //
@@ -91,21 +97,25 @@ echo '<div class="sideinfo-title">';
 echo 'Most Played Lanes:';
 echo '</div>';
 
+$k = 1;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($lane).'</div>';
 foreach($lane as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getLaneIMG($row['correctlane'], 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span class="'.($row['kills']>=$ka?'aboveavg':'belowavg').'">'.$row['kills'].'</span>/';
-    echo '<span class="'.($row['deaths']<$da?'aboveavg':'belowavg').'">'.$row['deaths'].'</span>/';
-    echo '<span class="'.($row['assists']>=$aa?'aboveavg':'belowavg').'">'.$row['assists']. '</span>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
     echo '<div class="sideinfo-row-stats">';
-    echo '<div class="sideinfo-row-damage">'.'Damage: <span class="'.($row['damage']>=$dmga?'aboveavg':'belowavg').'">'.$row['damage'].'</span> (<span class="'.($row['dmgm']>=$dmgma?'aboveavg':'belowavg').'">'.$row['dmgm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-gold">'.'Gold: <span class="'.($row['gold']>=$golda?'aboveavg':'belowavg').'">'.$row['gold'].'</span> (<span class="'.($row['goldm']>=$goldma?'aboveavg':'belowavg').'">'.$row['goldm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-cs">'.'CS: <span class="'.($row['cs']>=$csa?'aboveavg':'belowavg').'">'.$row['cs'].'</span> (<span class="'.($row['csm']>=$csma?'aboveavg':'belowavg').'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
     echo '</div>';
+    $i++;
 }
 echo '</div>';
 //
@@ -135,21 +145,25 @@ echo '<div class="sideinfo-title">';
 echo 'Most Played Top-Laner:';
 echo '</div>';
 
+$k = 2;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($top).'</div>';
 foreach($top as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
-    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], '6.6.1', 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span class="'.($row['kills']>=$ka?'aboveavg':'belowavg').'">'.$row['kills'].'</span>/';
-    echo '<span class="'.($row['deaths']<$da?'aboveavg':'belowavg').'">'.$row['deaths'].'</span>/';
-    echo '<span class="'.($row['assists']>=$aa?'aboveavg':'belowavg').'">'.$row['assists']. '</span>';
+    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
     echo '<div class="sideinfo-row-stats">';
-    echo '<div class="sideinfo-row-damage">'.'Damage: <span class="'.($row['damage']>=$dmga?'aboveavg':'belowavg').'">'.$row['damage'].'</span> (<span class="'.($row['dmgm']>=$dmgma?'aboveavg':'belowavg').'">'.$row['dmgm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-gold">'.'Gold: <span class="'.($row['gold']>=$golda?'aboveavg':'belowavg').'">'.$row['gold'].'</span> (<span class="'.($row['goldm']>=$goldma?'aboveavg':'belowavg').'">'.$row['goldm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-cs">'.'CS: <span class="'.($row['cs']>=$csa?'aboveavg':'belowavg').'">'.$row['cs'].'</span> (<span class="'.($row['csm']>=$csma?'aboveavg':'belowavg').'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
     echo '</div>';
+    $i++;
 }
 echo '</div>';
 //
@@ -179,21 +193,25 @@ echo '<div class="sideinfo-title">';
 echo 'Most Played Jungler:';
 echo '</div>';
 
+$k = 3;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($jungle).'</div>';
 foreach($jungle as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
-    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], '6.6.1', 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span class="'.($row['kills']>=$ka?'aboveavg':'belowavg').'">'.$row['kills'].'</span>/';
-    echo '<span class="'.($row['deaths']<$da?'aboveavg':'belowavg').'">'.$row['deaths'].'</span>/';
-    echo '<span class="'.($row['assists']>=$aa?'aboveavg':'belowavg').'">'.$row['assists']. '</span>';
+    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
     echo '<div class="sideinfo-row-stats">';
-    echo '<div class="sideinfo-row-damage">'.'Damage: <span class="'.($row['damage']>=$dmga?'aboveavg':'belowavg').'">'.$row['damage'].'</span> (<span class="'.($row['dmgm']>=$dmgma?'aboveavg':'belowavg').'">'.$row['dmgm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-gold">'.'Gold: <span class="'.($row['gold']>=$golda?'aboveavg':'belowavg').'">'.$row['gold'].'</span> (<span class="'.($row['goldm']>=$goldma?'aboveavg':'belowavg').'">'.$row['goldm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-cs">'.'CS: <span class="'.($row['cs']>=$csa?'aboveavg':'belowavg').'">'.$row['cs'].'</span> (<span class="'.($row['csm']>=$csma?'aboveavg':'belowavg').'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
     echo '</div>';
+    $i++;
 }
 echo '</div>';
 //
@@ -223,21 +241,25 @@ echo '<div class="sideinfo-title">';
 echo 'Most Played Mid-Laner:';
 echo '</div>';
 
+$k = 4;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($mid).'</div>';
 foreach($mid as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
-    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], '6.6.1', 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span class="'.($row['kills']>=$ka?'aboveavg':'belowavg').'">'.$row['kills'].'</span>/';
-    echo '<span class="'.($row['deaths']<$da?'aboveavg':'belowavg').'">'.$row['deaths'].'</span>/';
-    echo '<span class="'.($row['assists']>=$aa?'aboveavg':'belowavg').'">'.$row['assists']. '</span>';
+    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
     echo '<div class="sideinfo-row-stats">';
-    echo '<div class="sideinfo-row-damage">'.'Damage: <span class="'.($row['damage']>=$dmga?'aboveavg':'belowavg').'">'.$row['damage'].'</span> (<span class="'.($row['dmgm']>=$dmgma?'aboveavg':'belowavg').'">'.$row['dmgm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-gold">'.'Gold: <span class="'.($row['gold']>=$golda?'aboveavg':'belowavg').'">'.$row['gold'].'</span> (<span class="'.($row['goldm']>=$goldma?'aboveavg':'belowavg').'">'.$row['goldm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-cs">'.'CS: <span class="'.($row['cs']>=$csa?'aboveavg':'belowavg').'">'.$row['cs'].'</span> (<span class="'.($row['csm']>=$csma?'aboveavg':'belowavg').'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
     echo '</div>';
+    $i++;
 }
 echo '</div>';
 //
@@ -267,21 +289,25 @@ echo '<div class="sideinfo-title">';
 echo 'Most Played ADC:';
 echo '</div>';
 
+$k = 5;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($adc).'</div>';
 foreach($adc as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
-    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], '6.6.1', 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span class="'.($row['kills']>=$ka?'aboveavg':'belowavg').'">'.$row['kills'].'</span>/';
-    echo '<span class="'.($row['deaths']<$da?'aboveavg':'belowavg').'">'.$row['deaths'].'</span>/';
-    echo '<span class="'.($row['assists']>=$aa?'aboveavg':'belowavg').'">'.$row['assists']. '</span>';
+    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
     echo '<div class="sideinfo-row-stats">';
-    echo '<div class="sideinfo-row-damage">'.'Damage: <span class="'.($row['damage']>=$dmga?'aboveavg':'belowavg').'">'.$row['damage'].'</span> (<span class="'.($row['dmgm']>=$dmgma?'aboveavg':'belowavg').'">'.$row['dmgm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-gold">'.'Gold: <span class="'.($row['gold']>=$golda?'aboveavg':'belowavg').'">'.$row['gold'].'</span> (<span class="'.($row['goldm']>=$goldma?'aboveavg':'belowavg').'">'.$row['goldm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-cs">'.'CS: <span class="'.($row['cs']>=$csa?'aboveavg':'belowavg').'">'.$row['cs'].'</span> (<span class="'.($row['csm']>=$csma?'aboveavg':'belowavg').'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
     echo '</div>';
+    $i++;
 }
 echo '</div>';
 //
@@ -311,21 +337,52 @@ echo '<div class="sideinfo-title">';
 echo 'Most Played Support:';
 echo '</div>';
 
+$k = 6;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($support).'</div>';
 foreach($support as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
-    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], '6.6.1', 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span class="'.($row['kills']>=$ka?'aboveavg':'belowavg').'">'.$row['kills'].'</span>/';
-    echo '<span class="'.($row['deaths']<$da?'aboveavg':'belowavg').'">'.$row['deaths'].'</span>/';
-    echo '<span class="'.($row['assists']>=$aa?'aboveavg':'belowavg').'">'.$row['assists']. '</span>';
+    echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
     echo '<div class="sideinfo-row-stats">';
-    echo '<div class="sideinfo-row-damage">'.'Damage: <span class="'.($row['damage']>=$dmga?'aboveavg':'belowavg').'">'.$row['damage'].'</span> (<span class="'.($row['dmgm']>=$dmgma?'aboveavg':'belowavg').'">'.$row['dmgm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-gold">'.'Gold: <span class="'.($row['gold']>=$golda?'aboveavg':'belowavg').'">'.$row['gold'].'</span> (<span class="'.($row['goldm']>=$goldma?'aboveavg':'belowavg').'">'.$row['goldm'].'</span>/min)'.'</div>';
-    echo '<div class="sideinfo-row-cs">'.'CS: <span class="'.($row['cs']>=$csa?'aboveavg':'belowavg').'">'.$row['cs'].'</span> (<span class="'.($row['csm']>=$csma?'aboveavg':'belowavg').'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
     echo '</div>';
+    $i++;
+}
+echo '</div>';
+
+echo '<div class="sideinfo-box">';
+echo '<div class="sideinfo-title">';
+echo 'Most Played Team:';
+echo '</div>';
+
+$k = 7;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($team).'</div>';
+foreach($team as $row) {
+    echo '<div class="sideinfo-row">';
+    echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
+    echo '<div class="sideinfo-row-pic">'.getTeamIMG($row['team'], 40, 40).'</div>';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
+    echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
+    echo '</div>';
+    echo '<div class="sideinfo-row-stats">';
+    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
+    echo '</div>';
+    echo '</div>';
+    $i++;
 }
 echo '</div>';
 

@@ -24,12 +24,6 @@ function getTime($unix) {
     return $mins.':'.$secs;
 }
 
-function var_dump_pre($var) {
-    echo '<pre>';
-    var_dump($var);
-    echo '</pre>';
-}
-
 function getDDV($versions, $end = '') {
     //https://ddragon.leagueoflegends.com/cdn/'.$ver.'/img/item/' . $row[$i] . '.png
 
@@ -301,10 +295,7 @@ function getDDVer($matchversion) {
     $mv = explode('.', $matchversion);
 
     if ($mv[0] == 6) {
-        if ($mv[1] == 6) {
-            $mv[1] = 5;
-            $mv[2] = 1;
-        } else if ($mv[1] == 4) {
+        if ($mv[1] == 4) {
             $mv[2] = 2;
         } else {
             $mv[2] = 1;
@@ -396,12 +387,16 @@ function getLane($player) {
     return $lane;
 }
 
-function getChampionIMG($champpic, $champ, $ddver='6.7.1', $width=20, $height=20, $crop=false) {
+function getChampionIMG($champpic, $champ, $ddver='6.7.1', $width=20, $height=20, $crop=0) {
     $imgerr = "this.src='assets/error.png'";
-    if($crop) {
+    if($crop==1) {
         return '<div class="image-cropper" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
-    } else  {
+    } else if($crop==0)  {
         return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$champ.'"/>';
+    } else if($crop==2) {
+        return '<div class="image-cropper-left" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
+    } else if($crop==3) {
+        return '<div class="image-cropper-right" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
     }
 }
 
@@ -421,7 +416,8 @@ function getSpellIMG($spell, $spellname, $ddver='6.7.1', $width=20, $height=20) 
 
 function getItemIMG($item, $itemname='', $ddver='6.7.1', $width=20, $height=20) {
     $imgerr = "this.src='assets/error.png'";
-    return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/item/'.$item.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$itemname.'"/>';
+//    return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/item/'.$item.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$itemname.'"/>';
+    return '<a href="items.php?id='.$item.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/item/'.$item.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$itemname.'"/></a>';
 }
 
 function getUiIMG($pic, $width=20, $height=20) {
@@ -445,9 +441,13 @@ function getVSIMG($teamid=100, $width=30, $height=30) {
     return '<img src="assets/vs_'.$teamid.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/>';
 }
 
-function getMapIMG($mapid, $map, $ddver='6.7.1', $width=20, $height=20) {
+function getMapIMG($mapid, $map, $ddver='6.7.1', $width=20, $height=20, $crop=0) {
     $imgerr = "this.src='assets/error.png'";
-    return '<div class="image-cropper" data-toggle="tooltip" data-placement="top" title="'.$map.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/map/map'.$mapid.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
+    if($crop==1) {
+        return '<div class="image-cropper" data-toggle="tooltip" data-placement="top" title="' . $map . '"><img src="http://ddragon.leagueoflegends.com/cdn/' . $ddver . '/img/map/map' . $mapid . '.png" width="' . $width . 'px" height="' . $height . 'px" onerror="' . $imgerr . '"/></div>';
+    } else {
+        return '<img src="http://ddragon.leagueoflegends.com/cdn/' . $ddver . '/img/map/map' . $mapid . '.png" width="' . $width . 'px" height="' . $height . 'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="' . $map . '"/>';
+    }
 }
 
 function getRowColorO($col, $h, $l, $a) {
@@ -1071,6 +1071,62 @@ function get7BS($lane, $k, $d, $a, $dmg, $gold, $cs, $wardp, $wardd, $pink, $cc)
 
 function getCorrectTier($tier) {
     return $tier=='Platinum'?'Emerald':$tier;
+}
+
+function getQueueCode($queue) {
+    $code = $queue;
+    if($queue == 'RANKED_SOLO_5x5') {
+        $code = 'S';
+    } else if($queue == 'RANKED_PREMADE_5x5') {
+        $code = 'T5';
+    } else if($queue == 'RANKED_PREMADE_3x3') {
+        $code = 'T3';
+    } else if($queue == 'RANKED_TEAM_3x3') {
+        $code = 'T3';
+    } else if($queue == 'RANKED_TEAM_5x5') {
+        $code = 'T5';
+    } else if($queue == 'TEAM_BUILDER_DRAFT_RANKED_5x5') {
+        $code = 'D';
+    }
+    return $code;
+}
+
+function getSeasonCode($season) {
+    $code = $season;
+    if($season == 'PRESEASON3') {
+        $code = 'P3';
+    } else if($season == 'SEASON3') {
+        $code = '3';
+    } else if($season == 'PRESEASON2014') {
+        $code = 'P4';
+    } else if($season == 'SEASON2014') {
+        $code = '4';
+    } else if($season == 'PRESEASON2015') {
+        $code = 'P5';
+    } else if($season == 'SEASON2015') {
+        $code = '5';
+    } else if($season == 'PRESEASON2016') {
+        $code = 'P6';
+    } else if($season == 'SEASON2016') {
+        $code = '6';
+    }
+    return $code;
+}
+
+function var_dump_pre($array) {
+    foreach ($array as $text) {
+        echo '<pre>';
+        var_dump($text);
+        echo '</pre>';
+    }
+}
+
+function print_r_pre($array) {
+    foreach ($array as $text) {
+        echo '<pre>';
+        echo $text;
+        echo '</pre>';
+    }
 }
 
 ?>

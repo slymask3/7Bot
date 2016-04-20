@@ -107,6 +107,16 @@
         height: 25px;
         width: 30px;
         padding: 0;
+        -webkit-border-radius: 15px;
+        -moz-border-radius: 15px;
+        -ms-border-radius: 15px;
+        -o-border-radius: 15px;
+        border-radius: 15px;
+    }
+    .summonerinfo-progress {
+        position: absolute;
+        right: 5px;
+        bottom: 40px;
     }
     /*.summonerinfo-update:after {*/
         /*content: '';*/
@@ -133,9 +143,15 @@ echo '<div class="summonerinfo-name">';
 echo $displayname;
 echo '</div>';
 echo '<div class="summonerinfo-tier">';
-echo getCorrectTier($account['tier']).' '.$account['division'].' - ';
-echo $account['lp'].' LP';
-echo '</div>';
+echo getCorrectTier($account['tier']).' '.$account['division'].' ('.$account['lp'].' LP)';
+echo '</div>';;
+//echo '<div class="summonerinfo-progress">';
+//echo '<div class="progress">';
+//echo '<div class="progress-bar" style="width: '.$account['lp'].'%">';
+//echo $account['lp'].' LP';
+//echo '</div>';
+//echo '</div>';
+//echo '</div>';
 //echo '<div class="summonerinfo-lp">';
 //echo $account['lp'].' LP';
 //echo '</div>';

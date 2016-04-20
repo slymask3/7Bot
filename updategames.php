@@ -15,7 +15,7 @@ try {
 
             include_once 'updatesummoner.php';
 
-            if (!empty($region) && !empty($username) && ($season != 'merged')) {
+            if (!empty($region) && !empty($username)) {
                 $query = 'UPDATE accounts SET id=' . $summoner['id'] . ', displayname="' . $summoner['name'] . '", icon=' . $summoner['profileIconId'] . ', tier="' . $tier . '", division="' . $division . '", lp=' . $lp . ', s6=' . ($s6g ? 1 : 0) . ', s5=' . ($s5g ? 1 : 0) . ', s4=' . ($s4g ? 1 : 0) . ', s3=' . ($s3g ? 1 : 0) . ',
                   s6dynamic=' . ($s6dynamic ? 1 : 0) . ', s6solo=' . ($s6solo ? 1 : 0) . ', s6team5=' . ($s6team5 ? 1 : 0) . ', s6team3=' . ($s6team3 ? 1 : 0) . ',
                   s5dynamic=' . ($s5dynamic ? 1 : 0) . ', s5solo=' . ($s5solo ? 1 : 0) . ', s5team5=' . ($s5team5 ? 1 : 0) . ', s5team3=' . ($s5team3 ? 1 : 0) . ',
@@ -75,7 +75,7 @@ try {
                         $result->execute();
 
                         $started = new DateTime();
-                        echo '<div class="topinfo">Started: ' . date('Y/m/d H:i:s', $started->getTimestamp()) . '<br>';
+                        echo '<div class="topinfo"><div class="topinfo-text">Started: ' . date('Y/m/d H:i:s', $started->getTimestamp()) . '<br>';
 
                         $amountofgames = 0;
                         $retryafter = 0;
@@ -105,9 +105,10 @@ try {
                                         $amountofgames++;
                                         usleep(1500000); //1.5sec
                                     } catch(Exception $e) {
-                                        echo '<span class="error">';
-                                        echo 'Failed to add game with match id of '.$r['matches'][$i]['matchId'].' (' .$e->getCode().' - '.$e->getMessage().')<br>';
-                                        echo '</span>';
+//                                        echo '<span class="error">';
+//                                        echo 'Failed to add game with match id of '.$r['matches'][$i]['matchId'].' (' .$e->getCode().' - '.$e->getMessage().')<br>';
+//                                        echo '</span>';
+                                        include 'matcherrorhandler.php';
                                     } finally {
                                         if($api->getLastResponseCode() == 429) {
                                             $retryafter = 10;
@@ -137,6 +138,7 @@ try {
                     echo 'Line: ' .$e->getLine();
                     echo '</div>';
                 } finally{
+                    echo '</div>';
                     echo '</div>';
                 };
             }

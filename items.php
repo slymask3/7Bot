@@ -3,51 +3,47 @@ $page = 'items';
 $pagename = 'Items';
 require_once 'header.php';
 
-//https://global.api.pvp.net/api/lol/static-data/na/v1.2/item?api_key=a431e75e-623e-41c2-9515-0253e462a059
-
-
-//for($i=0) {
-
-//}
-
-
-
-//var_dump($itemarray['data']);
+$id = 0;
+if(!empty($_GET['id'])) {
+    $id = $_GET['id'];
+}
 
 $query = 'SELECT * FROM versions';
 $result = $conn->prepare($query);
 $result->execute();
-$table = $result->fetchAll();
+$versions = $result->fetchAll();
+//var_dump($query);
 
-foreach($table as $row) {
-    $itemarray = ((array)json_decode(file_get_contents('https://global.api.pvp.net/api/lol/static-data/na/v1.2/item?version='.$row[1].'.'.$row[2].'.'.$row[3].'&api_key=' . $apikey)));
+$query = 'SELECT * FROM items_'.$versions[0][1].'_'.$versions[0][2].'_'.$versions[0][3].' WHERE id='.$id;
+$result = $conn->prepare($query);
+$result->execute();
+$item = $result->fetchAll()[0];
+//var_dump($query);
 
-    $query = 'DROP TABLE items_'.$row[1].'_'.$row[2].'_'.$row[3].';';
-    $result = $conn->prepare($query);
-    $result->execute();
+echo '<div class="about">';
 
-    $query = 'CREATE TABLE items_'.$row[1].'_'.$row[2].'_'.$row[3].' (
-	id INT PRIMARY KEY,
-    name VARCHAR(50),
-    grp VARCHAR(50),
-    description VARCHAR(2000),
-    plaintext VARCHAR(2000)
-    );';
-    $result = $conn->prepare($query);
-    $result->execute();
-
-    foreach ($itemarray['data'] as $i) {
-        $item = (array)$i;
-        //var_dump($item['id']);
-
-        $query = 'INSERT INTO items_'.$row[1].'_'.$row[2].'_'.$row[3].' VALUES(' . $item['id'] . ', "' . $item['name'] . '", "' . $item['group'] . '", "' . $item['description'] . '", "' . $item['plaintext'] . '")';
-        $result = $conn->prepare($query);
-        $result->execute();
-
-        var_dump($query);
+//if($result->rowCount() > 0) {
+    echo getItemIMG($item['id'], $item['name'], $versions[0][1].'.'.$versions[0][2].'.'.$versions[0][3], 100, 100);
+    echo '<br>';
+    echo '<b>Name:</b><br> '.$item['name'];
+    echo '<br>';
+    echo '<br>';
+    echo '<b>Description:</b><br> '.$item['description'];
+    echo '<br>';
+    echo '<br>';
+    echo '<b>Plain Text:</b><br> '.$item['plaintext'];
+    echo '<br>';
+    foreach($versions as $version) {
+        echo getItemIMG($id, $item['name'], $version[1].'.'.$version[2].'.'.$version[3], 20, 20);
     }
-}
+//} else {
+//    echo 'Item with id \''.$id.'\' was not found.';
+//}
 
+echo '</div>'; //about
 
-require_once 'footer.php';
 ?>
+
+
+
+<?php require_once 'footer.php'; ?>

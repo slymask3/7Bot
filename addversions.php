@@ -2,6 +2,9 @@
 $page = 'versions';
 $pagename = 'Versions';
 require_once 'header.php';
+if($_SERVER['REMOTE_ADDR'] != $ip) {
+    header('Location:404.php');
+}
 
 $query = 'DROP TABLE IF EXISTS versions;';
 $result = $conn->prepare($query);

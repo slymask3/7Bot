@@ -250,6 +250,11 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
 
         $cc = $match['participants'][$row['pid']]['stats']['totalTimeCrowdControlDealt'];
 
+        $s = getSeasonCode($match['season']);
+        $q = getQueueCode($match['queueType']);
+        $ss = getSeasonString($match['season']);
+        $qs = getQueueString($match['queueType']);
+
         $color = "";
 
         if (array_key_exists('W/L', $row) && $row['W/L'] == "Win") {
@@ -346,10 +351,10 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
         echo '<a href="match.php?r='.$region.'&match='.$row['matchid'].'&player='.$userid.'" target="_blank">'.getLaneIMG($lane, 40, 40).'</a>';
         echo '</div>';
         echo '<div class="game-champion">';
-        echo getChampionIMG($row['Ch'], $row['champion'], $ddver_latest, 60, 60);
+        echo getChampionIMG($row['Ch'], $row['champion'], $ddver_latest, 60, 60, 2);
         echo '</div>';
         echo '<div class="game-enemy">';
-        echo getChampionIMG($enemy['pic'], $enemy['name'], $ddver_latest, 60, 60);
+        echo getChampionIMG($enemy['pic'], $enemy['name'], $ddver_latest, 60, 60, 3);
         echo '</div>';
         echo '<div class="game-vs">';
         echo getVSIMG($row['teamid']);
@@ -394,10 +399,12 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
         echo '<span class="game-number" data-toggle="tooltip" data-placement="top" title="'.$number.getOrdinal($number).' Game Played in this Queue">'.$number.'</span>';
         echo '</div>';
         echo '<div class="game-wards">';
-        echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score">CCS: <span class="sort-cc cc-color">'.$cc.'</span></span> - ';
+        echo '<span style="display:none"><span data-toggle="tooltip" data-placement="top" title="Crowd Control Score">CCS: <span class="sort-cc cc-color">'.$cc.'</span></span> - </span>';
         echo '<span style="color: #00ab00" data-toggle="tooltip" data-placement="top" title="Wards/Trinkets Placed">' .$wardsplaced.getUiIMG('ward_green').'</span> ';
         echo '<span style="color: #ff4121" data-toggle="tooltip" data-placement="top" title="Wards/Trinkets Destroyed">' .$wardsdestroyed.getUiIMG('ward_destroy').'</span> ';
         echo '<span style="color: hotpink" data-toggle="tooltip" data-placement="top" title="Pink Wards Bought">'.$pinkwardsbought.getUiIMG('ward_pink').'</span>';
+        echo ' <span class="game-ddver" data-toggle="tooltip" data-placement="top" title="Season: '.$ss.' Queue: '.$qs.'">('.$s.''.$q.')</span>';
+        echo ' <span class="game-ddver" data-toggle="tooltip" data-placement="top" title="Game Version '.$row['version'].'">(v'.$ddver[0].'.'.$ddver[1].')</span>';
         echo '</div>';
         echo '<div class="game-team">';
         echo '<span class="game-7bs" data-toggle="tooltip" data-placement="top" title="7 Bot Score (IN EARLY ALPHA STAGE)">7BS: <span class="sort-7bs 7bs-color">'.

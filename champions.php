@@ -240,7 +240,7 @@ if(empty($username)) {
 
         if($row['championlevel'] == null) {
             echo '<div class="champion-not-owned">';
-            echo getChampionIMG($row['pic'], $row['name'].'&#010;'.$row['title'], '6.5.1', 120, 120, true);
+            echo getChampionIMG($row['pic'], $row['name'].'&#010;'.$row['title'], $ddver_latest, 120, 120, 1);
             echo '<div class="mastery-level lvl0">0</div>';
             echo '<div class="mastery-stat">Points: 0</div>';
             echo '<div class="mastery-stat">Last Played: Never</div>';
@@ -252,7 +252,7 @@ if(empty($username)) {
             echo '</div>';
         } else {
             echo '<div class="champion">';
-            echo getChampionIMG($row['pic'], $row['name'].'&#010;'.$row['title'], '6.5.1', 120, 120, true);
+            echo getChampionIMG($row['pic'], $row['name'].'&#010;'.$row['title'], $ddver_latest, 120, 120, 1);
             echo '<div class="mastery-level lvl'.$row['championlevel'].'">'.$row['championlevel'].'</div>';
             echo '<div class="mastery-stat">Points: '.$row['championpoints'].'</div>';
             echo '<div class="mastery-stat">Last Played: '.date('Y/m/d', $row['lastplay']/1000).'</div>';

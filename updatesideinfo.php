@@ -1,8 +1,23 @@
 <?php
 
-$query = "CREATE TABLE IF NOT EXISTS sideinfo_".$region."_".$seasonCode."( summonerid BIGINT PRIMARY KEY, champ JSON, lane JSON, top JSON, jungle JSON, mid JSON, adc JSON, support JSON)";
+if($season == 'merged') {
+    $query = "CREATE OR REPLACE VIEW matches_" . $region . "_merged AS SELECT * FROM (
+    (SELECT * FROM matches_" . $region . "_season3 s3)
+    UNION ALL
+    (SELECT * FROM matches_" . $region . "_season2014 s4)
+    UNION ALL
+    (SELECT * FROM matches_" . $region . "_season2015 s5)
+    UNION ALL
+    (SELECT * FROM matches_" . $region . "_season2016 s6)
+    )m";
+    $result = $conn->prepare($query);
+    $result->execute();
+}
+
+$query = "CREATE TABLE IF NOT EXISTS sideinfo_".$region."_".$seasonCode."( summonerid BIGINT PRIMARY KEY, champ JSON, lane JSON, top JSON, jungle JSON, mid JSON, adc JSON, support JSON, team JSON)";
 $result = $conn->prepare($query);
 $result->execute();
+//var_dump($query, $result->errorInfo());
 
 $query = "SELECT count(*), pid, cid, c.pic, c.name, ROUND((SUM(outcome)/count(*))*100, 0) as 'winrate', ROUND(AVG(kills), 1) as 'kills', ROUND(AVG(deaths), 1) as 'deaths', ROUND(AVG(assists), 1) as 'assists', ROUND(AVG(cs), 1) as 'cs', ROUND(AVG(assists), 1) as 'assists', ROUND(AVG(damage), 1) as 'damage', ROUND(AVG(gold), 1) as 'gold', ROUND(AVG(cs/(length/60)), 2) as 'csm', ROUND(AVG(damage/(length/60)), 2) as 'dmgm', ROUND(AVG(gold/(length/60)), 2) as 'goldm'
 FROM
@@ -148,6 +163,26 @@ $result = $conn->prepare($query);
 $result->execute();
 $support = json_encode($result->fetchAll());
 
+$query = "SELECT count(*), pid, team, ROUND((SUM(outcome)/count(*))*100, 0) as 'winrate', ROUND(AVG(kills), 1) as 'kills', ROUND(AVG(deaths), 1) as 'deaths', ROUND(AVG(assists), 1) as 'assists', ROUND(AVG(cs), 1) as 'cs', ROUND(AVG(assists), 1) as 'assists', ROUND(AVG(damage), 1) as 'damage', ROUND(AVG(gold), 1) as 'gold', ROUND(AVG(cs/(length/60)), 2) as 'csm', ROUND(AVG(damage/(length/60)), 2) as 'dmgm', ROUND(AVG(gold/(length/60)), 2) as 'goldm'
+FROM
+((SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participants[0].teamId') as 'team', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome', json_extract(data, '$.participants[0].stats.kills') as 'kills', json_extract(data, '$.participants[0].stats.deaths') as 'deaths', json_extract(data, '$.participants[0].stats.assists') as 'assists', (json_extract(data, '$.participants[0].stats.minionsKilled')+json_extract(data, '$.participants[0].stats.neutralMinionsKilled')) as 'cs', json_extract(data, '$.participants[0].stats.totalDamageDealtToChampions') as 'damage', json_extract(data, '$.matchDuration') as 'length', json_extract(data, '$.participants[0].stats.goldEarned') as 'gold' FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[1].player.summonerId'), json_extract(data, '$.participants[1].teamId'), (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[1].stats.kills'), json_extract(data, '$.participants[1].stats.deaths'), json_extract(data, '$.participants[1].stats.assists'), (json_extract(data, '$.participants[1].stats.minionsKilled')+json_extract(data, '$.participants[1].stats.neutralMinionsKilled')), json_extract(data, '$.participants[1].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[1].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[2].player.summonerId'), json_extract(data, '$.participants[2].teamId'), (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[2].stats.kills'), json_extract(data, '$.participants[2].stats.deaths'), json_extract(data, '$.participants[2].stats.assists'), (json_extract(data, '$.participants[2].stats.minionsKilled')+json_extract(data, '$.participants[2].stats.neutralMinionsKilled')), json_extract(data, '$.participants[2].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[2].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[3].player.summonerId'), json_extract(data, '$.participants[3].teamId'), (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[3].stats.kills'), json_extract(data, '$.participants[3].stats.deaths'), json_extract(data, '$.participants[3].stats.assists'), (json_extract(data, '$.participants[3].stats.minionsKilled')+json_extract(data, '$.participants[3].stats.neutralMinionsKilled')), json_extract(data, '$.participants[3].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[3].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[4].player.summonerId'), json_extract(data, '$.participants[4].teamId'), (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[4].stats.kills'), json_extract(data, '$.participants[4].stats.deaths'), json_extract(data, '$.participants[4].stats.assists'), (json_extract(data, '$.participants[4].stats.minionsKilled')+json_extract(data, '$.participants[4].stats.neutralMinionsKilled')), json_extract(data, '$.participants[4].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[4].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[5].player.summonerId'), json_extract(data, '$.participants[5].teamId'), (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[5].stats.kills'), json_extract(data, '$.participants[5].stats.deaths'), json_extract(data, '$.participants[5].stats.assists'), (json_extract(data, '$.participants[5].stats.minionsKilled')+json_extract(data, '$.participants[5].stats.neutralMinionsKilled')), json_extract(data, '$.participants[5].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[5].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[6].player.summonerId'), json_extract(data, '$.participants[6].teamId'), (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[6].stats.kills'), json_extract(data, '$.participants[6].stats.deaths'), json_extract(data, '$.participants[6].stats.assists'), (json_extract(data, '$.participants[6].stats.minionsKilled')+json_extract(data, '$.participants[6].stats.neutralMinionsKilled')), json_extract(data, '$.participants[6].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[6].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[7].player.summonerId'), json_extract(data, '$.participants[7].teamId'), (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[7].stats.kills'), json_extract(data, '$.participants[7].stats.deaths'), json_extract(data, '$.participants[7].stats.assists'), (json_extract(data, '$.participants[7].stats.minionsKilled')+json_extract(data, '$.participants[7].stats.neutralMinionsKilled')), json_extract(data, '$.participants[7].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[7].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[8].player.summonerId'), json_extract(data, '$.participants[8].teamId'), (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[8].stats.kills'), json_extract(data, '$.participants[8].stats.deaths'), json_extract(data, '$.participants[8].stats.assists'), (json_extract(data, '$.participants[8].stats.minionsKilled')+json_extract(data, '$.participants[8].stats.neutralMinionsKilled')), json_extract(data, '$.participants[8].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[8].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")
+UNION ALL (SELECT json_extract(data, '$.participantIdentities[9].player.summonerId'), json_extract(data, '$.participants[9].teamId'), (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[9].stats.kills'), json_extract(data, '$.participants[9].stats.deaths'), json_extract(data, '$.participants[9].stats.assists'), (json_extract(data, '$.participants[9].stats.minionsKilled')+json_extract(data, '$.participants[9].stats.neutralMinionsKilled')), json_extract(data, '$.participants[9].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[9].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")) t
+WHERE pid=".$accountid."
+GROUP BY pid, team
+ORDER BY 1 DESC";
+$result = $conn->prepare($query);
+$result->execute();
+$team = json_encode($result->fetchAll());
+//var_dump($query, $result->errorInfo());
+
 $query6 = "SELECT
           summonerid,
           CAST(champ as CHAR) as 'champ',
@@ -156,7 +191,8 @@ $query6 = "SELECT
           CAST(jungle as CHAR) as 'jungle',
           CAST(mid as CHAR) as 'mid',
           CAST(adc as CHAR) as 'adc',
-          CAST(support as CHAR) as 'support'
+          CAST(support as CHAR) as 'support',
+          CAST(team as CHAR) as 'team'
           FROM sideinfo_".$region."_".$seasonCode."
           WHERE summonerid=".$accountid;
 $result6 = $conn->prepare($query6);
@@ -165,7 +201,7 @@ $result6->execute();
 //var_dump($result6->errorInfo(), $query6);
 
 if($result6->rowCount() == 0) {
-    $query7 = "INSERT INTO sideinfo_".$region."_".$seasonCode." VALUES(:id, :champ, :lane, :top, :jungle, :mid, :adc, :support)";
+    $query7 = "INSERT INTO sideinfo_".$region."_".$seasonCode." VALUES(:id, :champ, :lane, :top, :jungle, :mid, :adc, :support, :team)";
     $result7 = $conn->prepare($query7);
     $result7->bindParam(':id', $accountid, PDO::PARAM_INT);
     $result7->bindParam(':champ', $champ, PDO::PARAM_STR);
@@ -175,12 +211,13 @@ if($result6->rowCount() == 0) {
     $result7->bindParam(':mid', $mid, PDO::PARAM_STR);
     $result7->bindParam(':adc', $adc, PDO::PARAM_STR);
     $result7->bindParam(':support', $support, PDO::PARAM_STR);
+    $result7->bindParam(':team', $team, PDO::PARAM_STR);
     $result7->execute();
 //    $result7->fetchAll();
 //    var_dump($result7->errorInfo(), $query7);
 //    print_r($query7);
 } else {
-    $query8 = "UPDATE sideinfo_".$region."_".$seasonCode." SET champ=:champ, lane=:lane, top=:top, jungle=:jungle, mid=:mid, adc=:adc, support=:support WHERE summonerid=:id";
+    $query8 = "UPDATE sideinfo_".$region."_".$seasonCode." SET champ=:champ, lane=:lane, top=:top, jungle=:jungle, mid=:mid, adc=:adc, support=:support, team=:team WHERE summonerid=:id";
     $result8 = $conn->prepare($query8);
     $result8->bindParam(':id', $accountid, PDO::PARAM_INT);
     $result8->bindParam(':champ', $champ, PDO::PARAM_STR);
@@ -190,6 +227,7 @@ if($result6->rowCount() == 0) {
     $result8->bindParam(':mid', $mid, PDO::PARAM_STR);
     $result8->bindParam(':adc', $adc, PDO::PARAM_STR);
     $result8->bindParam(':support', $support, PDO::PARAM_STR);
+    $result8->bindParam(':team', $team, PDO::PARAM_STR);
     $result8->execute();
 //    $result8->fetchAll();
 //    var_dump($result8->errorInfo());

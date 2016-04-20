@@ -599,6 +599,10 @@ legend.scheduler-border {
   border-style: solid;
   border-color: #f3961c transparent;
 }
+.topinfo-text {
+    max-height: 200px;
+    overflow: auto;
+}
 
 /*.active::after {*/
     /*background-color: #ff2c2c;*/
@@ -812,6 +816,38 @@ legend.scheduler-border {
     display: inline;
     margin: 0 auto;
 }
+
+.image-cropper-left {
+    position: relative;
+    overflow: hidden;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+    /*border: 1px black solid;*/
+    border-bottom: 2px solid black;
+    border-top: 2px solid black;
+    border-left: 2px solid black;
+}
+.image-cropper-left img {
+    display: inline;
+    margin: 0 auto;
+}
+
+.image-cropper-right {
+    position: relative;
+    overflow: hidden;
+    border-bottom-right-radius: 15px;
+    border-top-right-radius: 15px;
+    /*border: 1px black solid;*/
+    border-bottom: 2px solid black;
+    border-top: 2px solid black;
+    border-right: 2px solid black;
+}
+.image-cropper-right img {
+    display: inline;
+    margin: 0 auto;
+}
+
+
 
 #tablenames tbody tr td {
     background-color: #1b1b1b;
@@ -1203,6 +1239,25 @@ display: block;
     position: absolute;
     left: 180px;
     top: 10px;
+    /*border: 1px black solid;*/
+}
+.game-items, .game-spells, .game-trinket, .game-keystone {
+    overflow: hidden;
+    border-radius: 5px;
+}
+.game-items img, .game-spells img, .game-trinket img, .game-keystone img {
+    vertical-align: top;
+    margin: 0 auto;
+}
+.image-cropper-15 {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    /*border: 1px black solid;*/
+}
+.image-cropper-15 img {
+    display: inline;
+    margin: 0 auto;
 }
 .game-trinket {
     /*display: inline-flex;*/
@@ -1265,7 +1320,7 @@ display: block;
     /*border: solid blue 1px;*/
     position: absolute;
     left: 80px;
-    bottom: 0px;
+    bottom: -2px;
     font-size: x-small;
     margin: 0;
     line-height: 110%
@@ -1607,6 +1662,15 @@ ul.pagination li:hover:not(.active) a {background-color: #ddd;}
 
 .display-none {
     display: none;
+}
+
+.game-ddver {
+    /*color: #1b1b1b;*/
+    color: white;
+    text-shadow: -1px 0 #1b1b1b, 0 1px #1b1b1b, 1px 0 #1b1b1b, 0 -1px #1b1b1b,
+                 -1px -1px #1b1b1b, -1px 1px #1b1b1b, 1px -1px #1b1b1b, 1px 1px #1b1b1b,
+                 -2px 0 #ff2c2c, 0 2px #ff2c2c, 2px 0 #ff2c2c, 0 -2px #ff2c2c,
+                 -2px -2px #ff2c2c, -2px 2px #ff2c2c, 2px -2px #ff2c2c, 2px 2px #ff2c2c;
 }
 
 /*@media screen and (max-width: 991px) {*/

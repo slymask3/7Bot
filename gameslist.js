@@ -94,6 +94,21 @@ function fullAvg() {
     document.getElementById("avg-kda").innerHTML = ((ka+aa)/da).toFixed(2);
 
     document.getElementById("total-games").innerHTML = userList.items.length;
+
+    //console.log(document.getElementById("si-champ-total").innerHTML);
+    for(k=0; k<8; k++) {
+        for (i = 0; i < document.getElementById("si-"+k+"-total").innerHTML; i++) {
+            document.getElementById("si-"+k+"-kills-" + i).className = getColor("si-"+k+"-kills-" + i, ka);
+            document.getElementById("si-"+k+"-deaths-" + i).className = getColorI("si-"+k+"-deaths-" + i, da);
+            document.getElementById("si-"+k+"-assists-" + i).className = getColor("si-"+k+"-assists-" + i, aa);
+            document.getElementById("si-"+k+"-dmg-" + i).className = getColor("si-"+k+"-dmg-" + i, dmga);
+            document.getElementById("si-"+k+"-gold-" + i).className = getColor("si-"+k+"-gold-" + i, golda);
+            document.getElementById("si-"+k+"-cs-" + i).className = getColor("si-"+k+"-cs-" + i, csa);
+            document.getElementById("si-"+k+"-dmgm-" + i).className = getColor("si-"+k+"-dmgm-" + i, dmgma);
+            document.getElementById("si-"+k+"-goldm-" + i).className = getColor("si-"+k+"-goldm-" + i, goldma);
+            document.getElementById("si-"+k+"-csm-" + i).className = getColor("si-"+k+"-csm-" + i, csma);
+        }
+    }
 }
 
 userList.on("updated", function(){

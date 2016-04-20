@@ -50,6 +50,8 @@ if($season == '6') {
     $seasonCode = 'SEASON3';
     $preseasonCode = 'PRESEASON2014';
     $seasonTable = '2013';
+} else if($season == 'merged') {
+    $seasonCode = 'MERGED';
 }
 
 //This page is responsible for getting the games information from the riot api and putting them into the database.
@@ -64,7 +66,7 @@ $account = $accres->fetchAll()[0];
 $displayname = $account['displayname'];
 $icon = $account['icon'];
 $tier = $account['tier'];
-$rank = $account['tier'].' '.$account['division'].' '.$account['lp'].'LP';
+$rank = getCorrectTier($account['tier']).' '.$account['division'].' '.$account['lp'].'LP';
 $userid = $account['id'];
 //var_dump($account, $icon, $tier, $rank);
 
@@ -302,6 +304,11 @@ if(!empty($region) && !empty($username)) {
             $s3t5 = '';
             $s3t3 = '';
             $m = '';
+            $ms = '';
+            $md = '';
+            $mt5 = '';
+            $mt3 = '';
+            $mq = '';
 
 //            var_dump($season, $queue);
 
@@ -351,6 +358,18 @@ if(!empty($region) && !empty($username)) {
                 }
             } else if ($season == 'merged') {
                 $m = ' class="active"';
+                if ($queue == 'dynamic') {
+                    $md = ' class="active"';
+                } else if ($queue == 'solo') {
+                    $ms = ' class="active"';
+                } else if ($queue == 'team5') {
+                    $mt5 = ' class="active"';
+                } else if ($queue == 'team3') {
+                    $mt3 = ' class="active"';
+                }
+            }
+            if ($queue == 'merged') {
+                $mq = ' class="active"';
             }
 
             echo '<ul class="nav nav-tabs" id="navbartop">';
@@ -424,6 +443,23 @@ if(!empty($region) && !empty($username)) {
                         echo '<li' . $s3t3 . '><a href="?r=' . $region . '&name=' . $username . '&s=' . $season . '&q=team3">Team 3v3</a></li>';
                     }
                 }
+                echo '<li' . $mq . '><a href="?r=' . $region . '&name=' . $username . '&s=' . $season . '&q=merged">All Queues</a></li>';
+                echo '</ul>';
+            } else {
+                echo '<ul class="nav nav-tabs" id="navbarbot">';
+                if ($s6dynamic || $s3dynamic || $s4dynamic || $s3dynamic) {
+                    echo '<li' . $md . '><a href="?r=' . $region . '&name=' . $username . '&s=' . $season . '&q=dynamic">Dynamic</a></li>';
+                }
+                if ($s6solo || $s5solo || $s4solo || $s3solo) {
+                    echo '<li' . $ms . '><a href="?r=' . $region . '&name=' . $username . '&s=' . $season . '&q=solo">Solo/Duo</a></li>';
+                }
+                if ($s6team5 || $s5team5 || $s4team5 || $s3team5) {
+                    echo '<li' . $mt5 . '><a href="?r=' . $region . '&name=' . $username . '&s=' . $season . '&q=team5">Team 5v5</a></li>';
+                }
+                if ($s6team3 || $s5team3 || $s4team3 || $s3team3) {
+                    echo '<li' . $mt3 . '><a href="?r=' . $region . '&name=' . $username . '&s=' . $season . '&q=team3">Team 3v3</a></li>';
+                }
+                echo '<li' . $mq . '><a href="?r=' . $region . '&name=' . $username . '&s=' . $season . '&q=merged">All Queues</a></li>';
                 echo '</ul>';
             }
 
@@ -475,13 +511,49 @@ if(!empty($region) && !empty($username)) {
 //(CAST(replace(json_extract(data, '$.season'), '\"', '') as CHAR)='$seasonCode' OR CAST(replace(json_extract(data, '$.season'), '\"', '') as CHAR)='$preseasonCode') AND
 //CAST(replace(json_extract(data, '$.queueType'), '\"', '') as CHAR)='$queueCode'";
 
-$qry = "SELECT
+$qryQueue = "";
+if($queue != 'merged') {
+    $qryQueue = " AND CAST(replace(json_extract(data, '$.queueType'), '\"', '') as CHAR)='$queueCode'";
+}
+
+$qrySeason = "";
+if($season == 'merged') {
+    $qrySeason = "SELECT matchid, creation, `match`, pid FROM (
+(SELECT
+matchid, cast(json_extract(data, '$.matchCreation') as char) as 'creation',
+CAST(data as CHAR) as 'match',
+getPiInt($accountid, data, '.participantId') as 'pid'
+FROM matches_".$region."_season3 s3 WHERE (".accountidEquals($accountid).")".$qryQueue.")
+UNION ALL
+(SELECT
 matchid, cast(json_extract(data, '$.matchCreation') as char),
 CAST(data as CHAR) as 'match',
 getPiInt($accountid, data, '.participantId') as 'pid'
-FROM matches_".$region."_".$seasonCode."
-WHERE (".accountidEquals($accountid).") AND
-CAST(replace(json_extract(data, '$.queueType'), '\"', '') as CHAR)='$queueCode'";
+FROM matches_".$region."_season2014 s4 WHERE (".accountidEquals($accountid).")".$qryQueue.")
+UNION ALL
+(SELECT
+matchid, cast(json_extract(data, '$.matchCreation') as char),
+CAST(data as CHAR) as 'match',
+getPiInt($accountid, data, '.participantId') as 'pid'
+FROM matches_".$region."_season2015 s5 WHERE (".accountidEquals($accountid).")".$qryQueue.")
+UNION ALL
+(SELECT
+matchid, cast(json_extract(data, '$.matchCreation') as char),
+CAST(data as CHAR) as 'match',
+getPiInt($accountid, data, '.participantId') as 'pid'
+FROM matches_".$region."_season2016 s6 WHERE (".accountidEquals($accountid).")".$qryQueue.")) m";
+} else {
+    $qrySeason = "SELECT matchid, creation, `match`, pid FROM (
+(SELECT
+matchid, cast(json_extract(data, '$.matchCreation') as char) as 'creation',
+CAST(data as CHAR) as 'match',
+getPiInt($accountid, data, '.participantId') as 'pid'
+FROM matches_".$region."_".$seasonCode." s WHERE (".accountidEquals($accountid).")".$qryQueue.")) t";
+}
+
+
+
+$qry = $qrySeason;
 
         if(!empty($_GET['order'])) {
             $order = $_GET['order'];
@@ -547,9 +619,9 @@ if($secondstograb < 0) {
 //        var_dump($endf);
 //        var_dump($endf-$startf);
 
-//        echo '<pre>';
-//        print_r($query);
-//        echo '</pre>';
+        echo '<pre style="display: none">';
+        print_r($query);
+        echo '</pre>';
 
 //function millisecsBetween($dateOne, $dateTwo, $abs = true) {
 //    $func = $abs ? 'abs' : 'intval';

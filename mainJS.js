@@ -38,8 +38,24 @@ function getClassColorI(i, sort, avg) {
     } else {
         return " aboveavg";
     }
-        }
+}
 
 function hideTopBar() {
     $('#topbar').hide();
+}
+
+function getColor(id ,avg) {
+    if(parseInt(document.getElementById(id).innerHTML) >= avg) {
+        return "aboveavg";
+    } else {
+        return "belowavg";
+    }
+}
+
+function getColorI(id ,avg) {
+    if(parseInt(document.getElementById(id).innerHTML) >= avg) {
+        return "belowavg";
+    } else {
+        return "aboveavg";
+    }
 }
