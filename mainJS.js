@@ -59,3 +59,8 @@ function getColorI(id ,avg) {
         return "aboveavg";
     }
 }
+
+//function searchAndUpdate() {
+//    r = document.getElementById('')
+//    window.location('index.php?r='+);
+//}

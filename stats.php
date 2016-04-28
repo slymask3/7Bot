@@ -107,6 +107,7 @@ if(!empty($username)) {
     }
     echo '<input type="text" class="form-control" name="name" value="'.$username.'" placeholder="Enter a Summoner\'s Name.." required />';
     echo '<button type="submit" class="btn btn-danger"><i class="fa fa-search"></i> Search</button>';
+    echo '<button type="button" class="btn btn-danger" disabled data-toggle="tooltip" data-placement="top" title="Coming Soon"><i class="fa fa-arrow-circle-o-up"></i> Update</button>';
     echo '</form>';
     echo '</div>';
 } else {
@@ -119,6 +120,7 @@ if(!empty($username)) {
     }
     echo '<input type="text" class="form-control" name="name" placeholder="Enter a Summoner\'s Name.." required />';
     echo '<button type="submit" class="btn btn-danger"><i class="fa fa-search"></i> Search</button>';
+    echo '<button type="button" class="btn btn-danger" disabled data-toggle="tooltip" data-placement="top" title="Coming Soon"><i class="fa fa-arrow-circle-o-up"></i> Update</button>';
     echo '</form>';
     echo '</div>';
 }

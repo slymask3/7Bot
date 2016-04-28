@@ -150,13 +150,13 @@ $limit = 50;
 if(!empty($_GET['limit'])) {
     $limit = $_GET['limit'];
 }
-$page = 1;
+$pagenum = 1;
 if(!empty($_GET['page'])) {
-    $page = $_GET['page'];
+    $pagenum = $_GET['page'];
 }
 $limitoffset = '';
 if($limit != 0) {
-    $limitoffset = ' LIMIT '.$limit.' OFFSET '.($limit*($page-1));
+    $limitoffset = ' LIMIT '.$limit.' OFFSET '.($limit*($pagenum-1));
 }
 
 $querylimit = $query.$limitoffset;
@@ -203,7 +203,7 @@ echo '<label for="page">Page:</label> ';
 echo '<select name="page" style="height: 26px; width:50px">';
 $totalpages = ceil($numberofgameswithselection / $limit);
 for ($i = 1; $i <= $totalpages; $i++) {
-    if ($page == $i) {
+    if ($pagenum == $i) {
         echo '<option value="' . $i . '" selected>' . $i . '</option>';
     } else {
         echo '<option value="' . $i . '">' . $i . '</option>';
@@ -262,7 +262,7 @@ echo '</div>';
 echo '<div class="pages">';
 echo '<div class="pageleft">';
 
-if ($page != 1) {
+if ($pagenum != 1) {
     //echo '<a href="#" class="btn btn-info" role="button"><< First Page</a> ';
     echo '<form action="/namechecker.php" method="get">';
     foreach ($_GET as $key => $value) {
@@ -277,7 +277,7 @@ if ($page != 1) {
     echo '<a href="#" class="btn btn-danger disabled" role="button"><< First Page</a> ';
 }
 
-if ($page > 1) {
+if ($pagenum > 1) {
     //echo '<a href="#" class="btn btn-info" role="button">< Previous Page</a>';
     echo '<form action="/namechecker.php" method="get">';
     foreach ($_GET as $key => $value) {
@@ -285,7 +285,7 @@ if ($page > 1) {
             echo "<input type='hidden' name='$key' value='$value'/>";
         }
     }
-    echo "<input type='hidden' name='page' value='".($page-1)."'/>";
+    echo "<input type='hidden' name='page' value='".($pagenum-1)."'/>";
     echo '<input type="submit" value="< Previous Page" class="btn btn-info" />';
     echo '</form>';
 } else {
@@ -295,7 +295,7 @@ if ($page > 1) {
 echo '</div>';
 echo '<div class="pageright">';
 
-if ($page != $totalpages) {
+if ($pagenum != $totalpages) {
     //echo '<a href="#" class="btn btn-info" role="button">Next Page ></a> ';
     echo '<form action="/namechecker.php" method="get">';
     foreach ($_GET as $key => $value) {
@@ -303,14 +303,14 @@ if ($page != $totalpages) {
             echo "<input type='hidden' name='$key' value='$value'/>";
         }
     }
-    echo "<input type='hidden' name='page' value='".($page+1)."'/>";
+    echo "<input type='hidden' name='page' value='".($pagenum+1)."'/>";
     echo '<input type="submit" value="Next Page >" class="btn btn-info" />';
     echo '</form> ';
 } else {
     echo '<a href="#" class="btn btn-danger disabled" role="button">Next Page ></a> ';
 }
 
-if ($page != $totalpages) {
+if ($pagenum != $totalpages) {
     //echo '<a href="javascript:gotoPage('.$totalpages.')" class="btn btn-info" role="button">Last Page >></a>';
     echo '<form action="/namechecker.php" method="get">';
     foreach ($_GET as $key => $value) {
@@ -330,7 +330,7 @@ echo '</div>';
 echo '<div class="pagecenter">';
 
 for($i=1; $i<=$totalpages; $i++) {
-    if ($i != $page) {
+    if ($i != $pagenum) {
         echo '<form action="/namechecker.php" method="get">';
         foreach ($_GET as $key => $value) {
             if ($key != "page" && $key != 'name') {

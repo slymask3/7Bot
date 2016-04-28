@@ -95,7 +95,7 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
     echo '<span class="game-7bs" data-toggle="tooltip" data-placement="top" title="7 Bot Score">7BS: <span id="avg-7bs">0</span></span> ';
     echo '</div>';
     echo '<div class="game-wards">';
-    echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score">CCS: <span id="avg-cc">0</span></span>';
+    echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score" style="display: none">CCS: <span id="avg-cc">0</span></span>';
     echo '</div>';
     echo '</div>';
     echo '</div>';
@@ -132,7 +132,7 @@ if(!empty($region) && !empty($username) && $accres->rowCount() > 0) {
     echo '<span class="game-7bs" data-toggle="tooltip" data-placement="top" title="7 Bot Score">7BS: <span id="avg-7bs-f">0</span></span> ';
     echo '</div>';
     echo '<div class="game-wards">';
-    echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score">CCS: <span id="avg-cc-f">0</span></span>';
+    echo '<span data-toggle="tooltip" data-placement="top" title="Crowd Control Score" style="display: none">CCS: <span id="avg-cc-f">0</span></span>';
     echo '</div>';
     echo '</div>';
     echo '</div>';

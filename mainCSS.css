@@ -535,7 +535,7 @@ body {
   /* Set the fixed height of the footer here */
   height: 60px;
     background: url('assets/navbg2.png');
-    padding: 12px;
+    padding: 5px;
     text-align: center;
     -moz-transform: scaleX(1) scaleY(-1);
     -o-transform: scaleX(1) scaleY(-1);
@@ -569,8 +569,13 @@ body {
 
 legend.scheduler-border {
     width:inherit; /* Or auto */
-    padding:0 10px; /* To give a bit of padding on the left and right */
+    padding:0 auto; /* To give a bit of padding on the left and right */
     border-bottom:none;
+}
+
+.text-muted {
+    padding: 0;
+    margin: 0;
 }
 
 
@@ -1098,7 +1103,7 @@ legend.scheduler-border {
 /*}*/
 
 .search-summoner {
-    width: 300px;
+    width: 388px;
     margin: 0 0 0 auto;
 }
 
@@ -1122,8 +1127,14 @@ legend.scheduler-border {
     border-bottom-right-radius: 0;
 }
 
-.search-summoner button {
-    /*display: inline-block;*/
+.search-summoner button:first-of-type {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.search-summoner button:last-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
@@ -1358,7 +1369,7 @@ display: block;
     margin:0;
 }
 .game-win {
-    background: #023500; /* For browsers that do not support gradients */
+    background: #105506; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(left top, #023500, #106e06); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(bottom right, #023500, #106e06); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(bottom right, #023500, #106e06); /* For Firefox 3.6 to 15 */
@@ -1372,7 +1383,7 @@ display: block;
     /*border: 2px solid #0e5300;*/
 }
 .game-loss {
-    background: #460606;
+    background: #83110f;
     background: -webkit-linear-gradient(left top, #460606, #a0110f); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(bottom right, #460606, #a0110f); /* For Opera 11.1 to 12.0 */
     background: -moz-linear-gradient(bottom right, #460606, #a0110f); /* For Firefox 3.6 to 15 */
@@ -1671,6 +1682,29 @@ ul.pagination li:hover:not(.active) a {background-color: #ddd;}
                  -1px -1px #1b1b1b, -1px 1px #1b1b1b, 1px -1px #1b1b1b, 1px 1px #1b1b1b,
                  -2px 0 #ff2c2c, 0 2px #ff2c2c, 2px 0 #ff2c2c, 0 -2px #ff2c2c,
                  -2px -2px #ff2c2c, -2px 2px #ff2c2c, 2px -2px #ff2c2c, 2px 2px #ff2c2c;
+}
+
+.recent-searches:before {
+    padding: 10px;
+    color: white;
+    content: "Recent Searches:";
+}
+
+.recent-searches {
+    color: white;
+    padding: 10px;
+    background-color: #1b1b1b;
+    border-radius: 15px;
+    opacity: 0.8;
+}
+
+.recent-searches-sets {
+    display: flex;
+}
+
+.recent-searches-set {
+    position: relative;
+    width: 186px;
 }
 
 /*@media screen and (max-width: 991px) {*/

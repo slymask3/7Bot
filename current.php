@@ -168,13 +168,13 @@ if(empty($username)) {
         }
     }
     echo '<input type="text" class="form-control" name="name" placeholder="Enter a Summoner\'s Name.." required />';
-    echo '<button type="submit" class="btn btn-danger"><i class="fa fa-search"></i> Search</button>';
+    echo '<button type="submit" class="btn btn-danger" style="border-bottom-right-radius: 4px; border-top-right-radius: 4px; "><i class="fa fa-search"></i> Search</button>';
     echo '</form>';
     echo '</div>';
 } else {
 //    include 'summonerinfo.php';
 
-    echo '<div class="search-summoner">';
+    echo '<div class="search-summoner" style="width:300px">';
     echo '<form action="current.php" method="get">';
     foreach ($_GET as $key => $value) {
         if ($key == "r") {
@@ -182,7 +182,7 @@ if(empty($username)) {
         }
     }
     echo '<input type="text" class="form-control" name="name" value="'.$username.'" placeholder="Enter a Summoner\'s Name.." required />';
-    echo '<button type="submit" class="btn btn-danger"><i class="fa fa-search"></i> Search</button>';
+    echo '<button type="submit" class="btn btn-danger" style="border-bottom-right-radius: 4px; border-top-right-radius: 4px; "><i class="fa fa-search"></i> Search</button>';
     echo '</form>';
     echo '</div>';
 

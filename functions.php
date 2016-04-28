@@ -2,11 +2,10 @@
 $imgerr = "this.src='assets/error.png'";
 $websitename = '7 Bot';
 $ddver_latest = '6.7.1';
+include('hidden.php');
 
-
+set_time_limit(0);
 error_reporting(E_ERROR | E_PARSE);
-//$conn = new PDO('mysql:host=localhost;dbname=ranked', 'root', '');
-
 
 function getTime($unix) {
     $min = floor($unix / 60);
@@ -583,6 +582,8 @@ function getCorrectLane($game, $i, $noinfiniteloop=true) {
     } else if ($player['timeline']['lane'] == 'JUNGLE') { //The player's lane is jungle, no need to check any further. Scratch that, afking might cause riot to think you're jungling...
         if($player['spell1Id'] == 11 || $player['spell2Id'] == 11) { //The player took smite, so throw him into the jungle I guess.
             $lane = 'Jungle';
+        } else if(($player['stats']['neutralMinionsKilled']*2) > $player['stats']['minionsKilled']) { //If jungler forgot to take smite, but is still the jungler.
+            $lane = 'Jungle';
         } else { //If no smite, need to throw him into a free lane/role.
             if($noinfiniteloop) {
                 $lane = getUnusedLane($game, $game['participants'][$i]['teamId']);
@@ -631,7 +632,13 @@ function getCorrectLane($game, $i, $noinfiniteloop=true) {
     }  else { //The player's lane is neither TOP, JUNGLE, MID, MIDDLE, or BOTTOM. Need to do some checks to determine the correct lane:
         if($player['spell1Id'] == 11 || $player['spell2Id'] == 11) { //The player took smite, so throw him into the jungle I guess.
             $lane = 'Jungle';
+        } else { //Get the lane that the champion is supposed to be in.
+            $lane = getChampionLane($player['championId']);
         }
+    }
+
+    if($lane!='Top'&&$lane!='Jungle'&&$lane!='Mid'&&$lane!='ADC'&&$lane!='Support') { //If no correct lane was found, assign from db:
+        $lane = getChampionLane($player['championId']);
     }
 
     return $lane;
@@ -656,6 +663,18 @@ function getUnusedLane($game, $team) {
         }
     }
 
+    return $lane;
+}
+
+function getChampionLane($id) {
+//    echo 'getting champion lane from id';
+    global $password;
+    $conn = new PDO('mysql:host=localhost;dbname=7bot', 'root', $password);
+    $query = 'SELECT id, lane1 FROM champions WHERE id='.$id;
+    $result = $conn->prepare($query);
+    $result->execute();
+    $lane = $result->fetchAll()[0]['lane1'];
+    $conn = null;
     return $lane;
 }
 
@@ -899,14 +918,16 @@ function createAccountsTableIfNotExists($region) {
                 displayname VARCHAR(16),
                 profileicon INT,
                 level INT,
-                revision INT,
+                revision BIGINT,
                 tier VARCHAR(10),
                 division VARCHAR(3),
                 lp INT,
                 leaguename VARCHAR(36),
                 wins INT,
                 losses INT,
-                lastupdated INT
+                lastupdated BIGINT,
+                queues VARCHAR(20),
+                rank INT
             ) COLLATE utf8_general_ci;';
 }
 
@@ -1127,6 +1148,27 @@ function print_r_pre($array) {
         echo $text;
         echo '</pre>';
     }
+}
+
+function isVowel($c) {
+    return $c=='E'||$c=='U'||$c=='I'||$c=='O'||$c=='A'||$c=='e'||$c=='u'||$c=='i'||$c=='o'||$c=='a';
+}
+
+function getOose($name) {
+    $oose = '';
+    $chars = str_split($name);
+
+    foreach($chars as $char) {
+        if(isVowel($char)) {
+            $oose .= $char;
+        } else {
+            $oose .= $char;
+            break;
+        }
+    }
+
+    $oose .= 'oose';
+    return $oose;
 }
 
 ?>

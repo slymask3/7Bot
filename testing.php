@@ -13,10 +13,14 @@ $username = 'chilaquiles';
 //$r = $api->getMatchHistory($id['id']);
 //$game = $api->getMatch($r['matches'][0]['matchId']);
 //fucked matches: 2092408242 2101450716 2116476535 1786216420 2084844730 1514926339 1514926339 2127458014
-$game = $api->getMatch(2137582323);//2121871884 2127458014 2122883264 2137699338 2137582323
+$game = $api->getMatch(2116672873);//2121871884 2127458014 2122883264 2137699338 2137582323 2137582323
+//2116672873 2156137733 2116672873
 
 echo '<table border="1px black solid">';
 for($i=0; $i<count($game['participants']); $i++) {
+    if($i == 5) {
+        echo '<tr><td>-</td></tr>';
+    }
     $player = $game['participants'][$i];
     $playeri = $game['participantIdentities'][$i];
     $query = 'SELECT id, pic, name FROM champions WHERE id='.$player['championId'];

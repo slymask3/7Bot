@@ -58,42 +58,45 @@ if($season == '6') {
 //todo: limit the fucking shit clicked per ip address
 require_once 'updategames.php';
 
-$query = 'SELECT * FROM accounts WHERE username LIKE "' . strtolower(str_replace(' ', '', $username)).'"';
+$query = 'SELECT * FROM accounts_'.$region.' WHERE username LIKE "' . strtolower(str_replace(' ', '', $username)).'"';
 $accres = $conn->prepare($query);
 $accres->execute();
 $account = $accres->fetchAll()[0];
 //var_dump($account);
 $displayname = $account['displayname'];
-$icon = $account['icon'];
+$icon = $account['profileicon'];
 $tier = $account['tier'];
 $rank = getCorrectTier($account['tier']).' '.$account['division'].' '.$account['lp'].'LP';
 $userid = $account['id'];
 //var_dump($account, $icon, $tier, $rank);
 
-$s6g = $account['s6'];
-$s5g = $account['s5'];
-$s4g = $account['s4'];
-$s3g = $account['s3'];
+//6DSTL5DSTL4DSTL3DSTL
+//01234567890123456789
 
-$s6dynamic = $account['s6dynamic'];
-$s6solo = $account['s6solo'];
-$s6team5 = $account['s6team5'];
-$s6team3 = $account['s6team3'];
+$s6g = (substr($account['queues'], 0, 1)=='1'?true:false);
+$s5g = (substr($account['queues'], 5, 1)=='1'?true:false);
+$s4g = (substr($account['queues'], 10, 1)=='1'?true:false);
+$s3g = (substr($account['queues'], 15, 1)=='1'?true:false);
 
-$s5dynamic = $account['s5dynamic'];
-$s5solo = $account['s5solo'];
-$s5team5 = $account['s5team5'];
-$s5team3 = $account['s5team3'];
+$s6dynamic = (substr($account['queues'], 1, 1)=='1'?true:false);
+$s6solo = (substr($account['queues'], 2, 1)=='1'?true:false);
+$s6team5 = (substr($account['queues'], 3, 1)=='1'?true:false);
+$s6team3 = (substr($account['queues'], 4, 1)=='1'?true:false);
 
-$s4dynamic = $account['s4dynamic'];
-$s4solo = $account['s4solo'];
-$s4team5 = $account['s4team5'];
-$s4team3 = $account['s4team3'];
+$s5dynamic = (substr($account['queues'], 6, 1)=='1'?true:false);
+$s5solo = (substr($account['queues'], 7, 1)=='1'?true:false);
+$s5team5 = (substr($account['queues'], 8, 1)=='1'?true:false);
+$s5team3 = (substr($account['queues'], 9, 1)=='1'?true:false);
 
-$s3dynamic = $account['s3dynamic'];
-$s3solo = $account['s3solo'];
-$s3team5 = $account['s3team5'];
-$s3team3 = $account['s3team3'];
+$s4dynamic = (substr($account['queues'], 11, 1)=='1'?true:false);
+$s4solo = (substr($account['queues'], 12, 1)=='1'?true:false);
+$s4team5 = (substr($account['queues'], 13, 1)=='1'?true:false);
+$s4team3 = (substr($account['queues'], 14, 1)=='1'?true:false);
+
+$s3dynamic = (substr($account['queues'], 16, 1)=='1'?true:false);
+$s3solo = (substr($account['queues'], 17, 1)=='1'?true:false);
+$s3team5 = (substr($account['queues'], 18, 1)=='1'?true:false);
+$s3team3 = (substr($account['queues'], 19, 1)=='1'?true:false);
 
 if($season == 'merged') {
     $dbtable = strtoupper($region) . '_' . $account['id'] . '_MERGED';
@@ -220,8 +223,9 @@ if(!empty($region) && !empty($username)) {
                     echo "<input type='hidden' name='$key' value='$value'/>";
                 }
             }
-            echo '<input type="text" class="form-control" name="name" value="'.$username.'" placeholder="Enter a Summoner\'s Name.." required />';
+            echo '<input type="text" class="form-control" name="name" value="'.$username.'" placeholder="Enter a Summoner\'s Name.." required maxlength="16" />';
             echo '<button type="submit" class="btn btn-danger"><i class="fa fa-search"></i> Search</button>';
+            echo '<button type="button" class="btn btn-danger" disabled data-toggle="tooltip" data-placement="top" title="Coming Soon"><i class="fa fa-arrow-circle-o-up"></i> Update</button>';
             echo '</form>';
             echo '</div>';
         } else {
@@ -229,13 +233,31 @@ if(!empty($region) && !empty($username)) {
             echo '<form action="index.php" method="get">';
             foreach ($_GET as $key => $value) {
                 if ($key == "r") {
-                    echo "<input type='hidden' name='$key' value='$value'/>";
+                    echo "<input type='hidden' name='$key' value='$value' id='search-region' />";
                 }
             }
-            echo '<input type="text" class="form-control" name="name" placeholder="Enter a Summoner\'s Name.." required />';
+            echo '<input type="text" class="form-control" name="name" placeholder="Enter a Summoner\'s Name.." id="search-name" required maxlength="16" />';
             echo '<button type="submit" class="btn btn-danger"><i class="fa fa-search"></i> Search</button>';
+            echo '<button type="button" class="btn btn-danger" disabled data-toggle="tooltip" data-placement="top" title="Coming Soon"><i class="fa fa-arrow-circle-o-up"></i> Update</button>';
             echo '</form>';
             echo '</div>';
+
+            if(isset($_COOKIE['recent-searches-'.$region])) {
+                echo '<div class="recent-searches">';
+                $recentSearches = array_chunk(explode('-', $_COOKIE['recent-searches-'.$region]), 10);
+                echo '<ol>';
+                echo '<div class="recent-searches-sets">';
+                foreach($recentSearches as $setof10) {
+                    echo '<div class="recent-searches-set">';
+                    foreach ($setof10 as $recent) {
+                        echo '<li><a href="?r='.$region.'&name='.$recent.'">'.$recent.'</a></li>';
+                    }
+                echo '</div>';
+                }
+                echo '</div>';
+                echo '</ol>';
+                echo '</div>';
+            }
 
 //            echo '<div class="text-center" id="search">';
 //            echo '<table align="center">';
@@ -628,14 +650,14 @@ if($secondstograb < 0) {
 //    return $func(strtotime($dateOne) - strtotime($dateTwo)) * 1000;
 //}
 
-        $limit = 50;
-        if(!empty($_GET['limit'])) {
-            $limit = $_GET['limit'];
-        }
-        $page = 1;
-        if(!empty($_GET['page'])) {
-            $page = $_GET['page'];
-        }
+//        $limit = 50;
+//        if(!empty($_GET['limit'])) {
+//            $limit = $_GET['limit'];
+//        }
+//        $page = 1;
+//        if(!empty($_GET['page'])) {
+//            $page = $_GET['page'];
+//        }
         $limitoffset = '';
         if($limit != 0) {
             //$limitoffset = ' LIMIT '.$limit.' OFFSET '.($limit*($page-1));
