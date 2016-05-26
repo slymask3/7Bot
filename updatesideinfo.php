@@ -14,7 +14,7 @@ if($season == 'merged') {
     $result->execute();
 }
 
-$query = "CREATE TABLE IF NOT EXISTS sideinfo_".$region."_".$seasonCode."( summonerid BIGINT PRIMARY KEY, champ JSON, lane JSON, top JSON, jungle JSON, mid JSON, adc JSON, support JSON, team JSON)";
+$query = "CREATE TABLE IF NOT EXISTS sideinfo_".$region."_".$seasonCode."( summonerid BIGINT PRIMARY KEY, champ JSON, lane JSON, top JSON, jungle JSON, mid JSON, adc JSON, support JSON, team JSON, premade JSON)";
 $result = $conn->prepare($query);
 $result->execute();
 //var_dump($query, $result->errorInfo());
@@ -34,10 +34,12 @@ UNION ALL (SELECT json_extract(data, '$.participantIdentities[9].player.summoner
 LEFT JOIN champions c ON cid=c.id
 WHERE pid=".$accountid."
 GROUP BY pid, cid, 4, 5
-ORDER BY 1 DESC LIMIT 20";
+ORDER BY 1 DESC";
 $result = $conn->prepare($query);
 $result->execute();
 $champ = json_encode($result->fetchAll());
+
+//print_r_pre($query);
 
 $query = "SELECT count(*), pid, getCorrectLane(lane, role) as 'correctlane', ROUND((SUM(outcome)/count(*))*100, 0) as 'winrate', ROUND(AVG(kills), 1) as 'kills', ROUND(AVG(deaths), 1) as 'deaths', ROUND(AVG(assists), 1) as 'assists', ROUND(AVG(cs), 1) as 'cs', ROUND(AVG(assists), 1) as 'assists', ROUND(AVG(damage), 1) as 'damage', ROUND(AVG(gold), 1) as 'gold', ROUND(AVG(cs/(length/60)), 2) as 'csm', ROUND(AVG(damage/(length/60)), 2) as 'dmgm', ROUND(AVG(gold/(length/60)), 2) as 'goldm'
 FROM
@@ -53,7 +55,7 @@ UNION ALL (SELECT json_extract(data, '$.participantIdentities[8].player.summoner
 UNION ALL (SELECT json_extract(data, '$.participantIdentities[9].player.summonerId'), json_extract(data, '$.participants[9].timeline.lane'), json_extract(data, '$.participants[9].timeline.role'), (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end), json_extract(data, '$.participants[9].stats.kills'), json_extract(data, '$.participants[9].stats.deaths'), json_extract(data, '$.participants[9].stats.assists'), (json_extract(data, '$.participants[9].stats.minionsKilled')+json_extract(data, '$.participants[9].stats.neutralMinionsKilled')), json_extract(data, '$.participants[9].stats.totalDamageDealtToChampions'), json_extract(data, '$.matchDuration'), json_extract(data, '$.participants[9].stats.goldEarned') FROM matches_".$region."_".$seasonCode.")) t
 WHERE pid=".$accountid."
 GROUP BY pid, correctlane
-ORDER BY 1 DESC LIMIT 10";
+ORDER BY 1 DESC";
 $result = $conn->prepare($query);
 $result->execute();
 $lane = json_encode($result->fetchAll());
@@ -95,7 +97,7 @@ LEFT JOIN champions c ON cid=c.id
 WHERE pid=".$accountid."
 GROUP BY pid, cid, 4, 5, 6
 HAVING correctlane='Jungle'
-ORDER BY 1 DESC LIMIT 10";
+ORDER BY 1 DESC";
 $result = $conn->prepare($query);
 $result->execute();
 $jungle = json_encode($result->fetchAll());
@@ -116,7 +118,7 @@ LEFT JOIN champions c ON cid=c.id
 WHERE pid=".$accountid."
 GROUP BY pid, cid, 4, 5, 6
 HAVING correctlane='Mid'
-ORDER BY 1 DESC LIMIT 10";
+ORDER BY 1 DESC";
 $result = $conn->prepare($query);
 $result->execute();
 $mid = json_encode($result->fetchAll());
@@ -137,7 +139,7 @@ LEFT JOIN champions c ON cid=c.id
 WHERE pid=".$accountid."
 GROUP BY pid, cid, 4, 5, 6
 HAVING correctlane='ADC'
-ORDER BY 1 DESC LIMIT 10";
+ORDER BY 1 DESC";
 $result = $conn->prepare($query);
 $result->execute();
 $adc = json_encode($result->fetchAll());
@@ -158,7 +160,7 @@ LEFT JOIN champions c ON cid=c.id
 WHERE pid=".$accountid."
 GROUP BY pid, cid, 4, 5, 6
 HAVING correctlane='Support'
-ORDER BY 1 DESC LIMIT 10";
+ORDER BY 1 DESC";
 $result = $conn->prepare($query);
 $result->execute();
 $support = json_encode($result->fetchAll());
@@ -183,6 +185,121 @@ $result->execute();
 $team = json_encode($result->fetchAll());
 //var_dump($query, $result->errorInfo());
 
+$query = "SELECT count(*), pid, REPLACE(duo, '\"', '') as 'duo', ROUND((SUM(outcome)/count(*))*100, 0) as 'winrate'
+FROM (
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[0].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[0].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[1].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[1].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[2].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[2].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[3].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[3].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[4].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[4].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[5].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[5].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[6].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[6].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[7].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[7].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[8].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[9].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[8].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[1].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[2].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[3].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[4].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[5].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[6].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[7].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[8].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.") UNION ALL
+(SELECT json_extract(data, '$.participantIdentities[9].player.summonerId') as 'pid', json_extract(data, '$.participantIdentities[0].player.summonerName') as 'duo', (CASE WHEN json_extract(data, '$.participants[9].stats.winner')=true then 1 else 0 end) as 'outcome' FROM matches_".$region."_".$seasonCode.")
+) t
+WHERE pid=".$accountid."
+GROUP BY pid, duo
+HAVING count(*) > 1
+ORDER BY 1 DESC";
+$result = $conn->prepare($query);
+$result->execute();
+$premade = json_encode($result->fetchAll());
+if(!$premade) {
+    $premade = $lane;
+}
+var_dump($result->errorInfo(), $query, $premade);
+print_r_pre($query);
+
 $query6 = "SELECT
           summonerid,
           CAST(champ as CHAR) as 'champ',
@@ -192,7 +309,8 @@ $query6 = "SELECT
           CAST(mid as CHAR) as 'mid',
           CAST(adc as CHAR) as 'adc',
           CAST(support as CHAR) as 'support',
-          CAST(team as CHAR) as 'team'
+          CAST(team as CHAR) as 'team',
+          CAST(premade as CHAR) as 'premade'
           FROM sideinfo_".$region."_".$seasonCode."
           WHERE summonerid=".$accountid;
 $result6 = $conn->prepare($query6);
@@ -201,7 +319,7 @@ $result6->execute();
 //var_dump($result6->errorInfo(), $query6);
 
 if($result6->rowCount() == 0) {
-    $query7 = "INSERT INTO sideinfo_".$region."_".$seasonCode." VALUES(:id, :champ, :lane, :top, :jungle, :mid, :adc, :support, :team)";
+    $query7 = "INSERT INTO sideinfo_".$region."_".$seasonCode." VALUES(:id, :champ, :lane, :top, :jungle, :mid, :adc, :support, :team, :premade)";
     $result7 = $conn->prepare($query7);
     $result7->bindParam(':id', $accountid, PDO::PARAM_INT);
     $result7->bindParam(':champ', $champ, PDO::PARAM_STR);
@@ -212,12 +330,13 @@ if($result6->rowCount() == 0) {
     $result7->bindParam(':adc', $adc, PDO::PARAM_STR);
     $result7->bindParam(':support', $support, PDO::PARAM_STR);
     $result7->bindParam(':team', $team, PDO::PARAM_STR);
+    $result7->bindParam(':premade', $premade, PDO::PARAM_STR);
     $result7->execute();
 //    $result7->fetchAll();
-//    var_dump($result7->errorInfo(), $query7);
+    var_dump($result7->errorInfo(), $query7);
 //    print_r($query7);
 } else {
-    $query8 = "UPDATE sideinfo_".$region."_".$seasonCode." SET champ=:champ, lane=:lane, top=:top, jungle=:jungle, mid=:mid, adc=:adc, support=:support, team=:team WHERE summonerid=:id";
+    $query8 = "UPDATE sideinfo_".$region."_".$seasonCode." SET champ=:champ, lane=:lane, top=:top, jungle=:jungle, mid=:mid, adc=:adc, support=:support, team=:team, premade=:premade WHERE summonerid=:id";
     $result8 = $conn->prepare($query8);
     $result8->bindParam(':id', $accountid, PDO::PARAM_INT);
     $result8->bindParam(':champ', $champ, PDO::PARAM_STR);
@@ -228,9 +347,10 @@ if($result6->rowCount() == 0) {
     $result8->bindParam(':adc', $adc, PDO::PARAM_STR);
     $result8->bindParam(':support', $support, PDO::PARAM_STR);
     $result8->bindParam(':team', $team, PDO::PARAM_STR);
+    $result8->bindParam(':premade', $premade, PDO::PARAM_STR);
     $result8->execute();
 //    $result8->fetchAll();
-//    var_dump($result8->errorInfo());
+    var_dump($result8->errorInfo());
 //    print_r($query8);
 }
 

@@ -64,3 +64,16 @@ function getColorI(id ,avg) {
 //    r = document.getElementById('')
 //    window.location('index.php?r='+);
 //}
+
+function toggleScrollArrow() {
+    //console.log('test');
+    if(document.body.scrollTop === 0) {
+        //document.getElementById('scrollarrow').innerHTML = 'top';
+        document.getElementById('scrollarrow').style.display = 'none';
+    } else {
+        //document.getElementById('scrollarrow').innerHTML = 'not';
+        document.getElementById('scrollarrow').style.display = 'block';
+    }
+}
+
+window.setInterval(toggleScrollArrow, 100);

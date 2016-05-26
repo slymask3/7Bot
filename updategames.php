@@ -18,6 +18,9 @@ try {
 //            include_once 'updatesummoner.php';
             include_once 'updateaccount.php';
 
+//                        $accountid = $summoner['id'];
+//                        include 'updatesideinfo.php';
+
             if (!empty($region) && !empty($username)) {
 //                $query = 'UPDATE accounts SET id=' . $summoner['id'] . ', displayname="' . $summoner['name'] . '", icon=' . $summoner['profileIconId'] . ', tier="' . $tier . '", division="' . $division . '", lp=' . $lp . ', s6=' . ($s6g ? 1 : 0) . ', s5=' . ($s5g ? 1 : 0) . ', s4=' . ($s4g ? 1 : 0) . ', s3=' . ($s3g ? 1 : 0) . ',
 //                  s6dynamic=' . ($s6dynamic ? 1 : 0) . ', s6solo=' . ($s6solo ? 1 : 0) . ', s6team5=' . ($s6team5 ? 1 : 0) . ', s6team3=' . ($s6team3 ? 1 : 0) . ',
@@ -125,7 +128,7 @@ try {
                             }
                         }
                         $accountid = $account['id'];
-                        include 'updatesideinfo.php';
+//                        include 'updatesideinfo.php'; //realone
 
                         $ended = new DateTime();
                         $seconds = ($ended->diff($started)->h*3600)+($ended->diff($started)->m*60)+$ended->diff($started)->s;
@@ -154,6 +157,10 @@ try {
 } catch(Exception $e) {
     echo '<div class="topinfo error">';
     echo 'An error occurred, make sure you have entered the correct information.';
+    echo '<br>Code: '.$e->getCode();
+    echo '<br>Message: '.$e->getMessage();
+    echo '<br>File: '.$e->getFile();
+    echo '<br>Line: '.$e->getLine();
     echo '</div>';
 }
 ?>

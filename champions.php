@@ -259,7 +259,7 @@ if(empty($username)) {
             echo '<div class="mastery-stat">Points: '.$row['championpoints'].'</div>';
             echo '<div class="mastery-stat">Last Played: '.date('Y/m/d', $row['lastplay']/1000).'</div>';
             echo '<div class="progress" style="margin: 0; height: 20px;" data-toggle="tooltip" data-placement="top" title="'.round(($row['championpointssincelastlevel'] / ($row['championpointssincelastlevel']+$row['championpointsuntilnextlevel'])) * 100, 0).'%">';
-            if($row['championlevel'] == 5) {
+            if($row['championlevel'] >= 5) {
                 echo '<div class="progress-bar progress-bar-danger" role="progressbar" style="height: 20px; width:'.round(($row['championpointssincelastlevel'] / ($row['championpointssincelastlevel']+$row['championpointsuntilnextlevel'])) * 100, 0).'%"></div>';
                 echo '<span>'.$row['championpoints'].'</span>';
             } else {

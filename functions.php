@@ -1,7 +1,8 @@
 <?php
 $imgerr = "this.src='assets/error.png'";
 $websitename = '7 Bot';
-$ddver_latest = '6.7.1';
+$ddver_latest = '6.10.1';
+$totalchampions = 131;
 include('hidden.php');
 
 set_time_limit(0);
@@ -386,40 +387,40 @@ function getLane($player) {
     return $lane;
 }
 
-function getChampionIMG($champpic, $champ, $ddver='6.7.1', $width=20, $height=20, $crop=0) {
+function getChampionIMG($champpic, $champ, $ddver='6.10.1', $width=20, $height=20, $crop=0) {
     $imgerr = "this.src='assets/error.png'";
     if($crop==1) {
-        return '<div class="image-cropper" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
+        return '<div class="image-cropper" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
     } else if($crop==0)  {
-        return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$champ.'"/>';
+        return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$champ.'"/>';
     } else if($crop==2) {
-        return '<div class="image-cropper-left" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
+        return '<div class="image-cropper-left" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
     } else if($crop==3) {
-        return '<div class="image-cropper-right" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
+        return '<div class="image-cropper-right" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$champ.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/champion/'.$champpic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
     }
 }
 
 function getLaneIMG($lane, $width=20, $height=20, $crop=false) {
     $imgerr = "this.src='assets/error.png'";
     if($crop) {
-        return '<div class="image-cropper" data-toggle="tooltip" data-placement="top" title="'.$lane.'"><img src="assets/lane_'.$lane.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
+        return '<div class="image-cropper" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$lane.'"><img src="assets/lane_'.$lane.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/></div>';
     } else  {
-        return '<img src="assets/lane_'.$lane.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$lane.'"/>';
+        return '<img src="assets/lane_'.$lane.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$lane.'"/>';
     }
 }
 
-function getSpellIMG($spell, $spellname, $ddver='6.7.1', $width=20, $height=20) {
+function getSpellIMG($spell, $spellname, $ddver='6.10.1', $width=20, $height=20) {
     $imgerr = "this.src='assets/error.png'";
-    return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/spell/'.$spell.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$spellname.'"/>';
+    return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/spell/'.$spell.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$spellname.'"/>';
 }
 
-function getItemIMG($item, $itemname='', $ddver='6.7.1', $width=20, $height=20) {
+function getItemIMG($item, $itemname='', $ddver='6.10.1', $width=20, $height=20) {
     $imgerr = "this.src='assets/error.png'";
 //    return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/item/'.$item.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$itemname.'"/>';
-    return '<a href="items.php?id='.$item.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/item/'.$item.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.$itemname.'"/></a>';
+    return '<a href="items.php?id='.$item.'"><img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/item/'.$item.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$itemname.'"/></a>';
 }
 
-function getUiIMG($pic, $width=20, $height=20) {
+function getUiIMG($pic, $width=15, $height=15) {
     $imgerr = "this.src='assets/error.png'";
     //return '<img src="http://ddragon.leagueoflegends.com/cdn/5.5.1/img/ui/'.$pic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/>';
     return '<img src="assets/'.$pic.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '"/>';
@@ -427,12 +428,12 @@ function getUiIMG($pic, $width=20, $height=20) {
 
 function getTeamIMG($id, $width=20, $height=20) {
     $imgerr = "this.src='assets/error.png'";
-    return '<img src="assets/team_'.$id.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-toggle="tooltip" data-placement="top" title="'.($id==100 ? 'Blue Side' : 'Red Side').'"/>';
+    return '<img src="assets/team_'.$id.'.png" width="'.$width.'px" height="'.$height.'px" onerror="' . $imgerr . '" data-container="body" data-toggle="tooltip" data-placement="top" title="'.($id==100 ? 'Blue Side' : 'Red Side').'"/>';
 }
 
-function getMasteryIMG($mastery, $masteryname, $ddver='6.7.1', $width=20, $height=20) {
+function getMasteryIMG($mastery, $masteryname, $ddver='6.10.1', $width=20, $height=20) {
     $imgerr = "this.src='assets/error.png'";
-    return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/mastery/'.$mastery.'.png" width="'.$width.'px" height="'.$height.'px" data-toggle="tooltip" data-placement="top" title="'.$masteryname.'"/>';
+    return '<img src="http://ddragon.leagueoflegends.com/cdn/'.$ddver.'/img/mastery/'.$mastery.'.png" width="'.$width.'px" height="'.$height.'px" data-container="body" data-toggle="tooltip" data-placement="top" title="'.$masteryname.'" onerror="' . $imgerr . '"/>';
 }
 
 function getVSIMG($teamid=100, $width=30, $height=30) {
@@ -1112,6 +1113,24 @@ function getQueueCode($queue) {
     return $code;
 }
 
+function getQueueCode2($queue) {
+    $code = $queue;
+    if($queue == 'RANKED_SOLO_5x5') {
+        $code = 'Solo/Duo';
+    } else if($queue == 'RANKED_PREMADE_5x5') {
+        $code = 'Team 5s';
+    } else if($queue == 'RANKED_PREMADE_3x3') {
+        $code = 'Team 3s';
+    } else if($queue == 'RANKED_TEAM_3x3') {
+        $code = 'Team 3s';
+    } else if($queue == 'RANKED_TEAM_5x5') {
+        $code = 'Team 5s';
+    } else if($queue == 'TEAM_BUILDER_DRAFT_RANKED_5x5') {
+        $code = 'Dynamic';
+    }
+    return $code;
+}
+
 function getSeasonCode($season) {
     $code = $season;
     if($season == 'PRESEASON3') {
@@ -1142,12 +1161,12 @@ function var_dump_pre($array) {
     }
 }
 
-function print_r_pre($array) {
-    foreach ($array as $text) {
+function print_r_pre($text) {
+//    foreach ($array as $text) {
         echo '<pre>';
         echo $text;
         echo '</pre>';
-    }
+//    }
 }
 
 function isVowel($c) {
@@ -1169,6 +1188,23 @@ function getOose($name) {
 
     $oose .= 'oose';
     return $oose;
+}
+
+function fixP($p) {
+    $p = number_format($p, 2);
+    $final = $p;
+    if($p<10) {
+        $final = ''.$p;
+    }
+    return $final;
+}
+
+function getFullMasteryIMG($masteries, $ddver='6.10.1', $width=20, $height=20) {
+    $full = '';
+    for($i=0; $i<count($masteries); $i++) {
+        $full .= getMasteryIMG($masteries[$i]['masteryId'], $masteries[$i]['masteryId'], $ddver);
+    }
+    return $full;
 }
 
 ?>

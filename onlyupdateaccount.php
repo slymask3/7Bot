@@ -1,6 +1,6 @@
 <?php ob_start();
 $page = 'index';
-$pagename = 'Testing';
+$pagename = 'Updating Summoner';
 require_once 'header.php';
 
 include_once 'updateaccount.php';

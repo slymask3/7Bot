@@ -9,7 +9,8 @@ $query = "SELECT
           CAST(mid as CHAR) as 'mid',
           CAST(adc as CHAR) as 'adc',
           CAST(support as CHAR) as 'support',
-          CAST(team as CHAR) as 'team'
+          CAST(team as CHAR) as 'team',
+          CAST(premade as CHAR) as 'premade'
           FROM sideinfo_".$region."_".$seasonCode."
           WHERE summonerid=".$accountid;
 $result = $conn->prepare($query);
@@ -23,6 +24,7 @@ $mid = json_decode($table[0]['mid'], true);
 $adc = json_decode($table[0]['adc'], true);
 $support = json_decode($table[0]['support'], true);
 $team = json_decode($table[0]['team'], true);
+$premade = json_decode($table[0]['premade'], true);
 
 //var_dump($champ);
 
@@ -47,8 +49,21 @@ $team = json_decode($table[0]['team'], true);
 //$table = $result->fetchAll();
 
 echo '<div class="sideinfo-box">';
+echo '<form action="onlyupdatesideinfo.php" method="get">';
+echo '<input type="hidden" name="page" value="'.$page.'" />';
+echo '<input type="hidden" name="r" value="'.$region.'" />';
+echo '<input type="hidden" name="name" value="'.$account['username'].'" />';
+echo '<input type="hidden" name="q" value="'.$queue.'" />';
+echo '<input type="hidden" name="s" value="'.$season.'" />';
+echo '<input type="hidden" name="accountid" value="'.$accountid.'" />';
+echo '<button type="submit" class="btn btn-warning"><i class="fa fa-arrow-circle-o-up"></i> Update Stats</button>';
+echo '</form>';
+echo '<span class="warning">WARNING: Could take up to 2 minutes to complete.</span>';
+echo '</div>';
+
+echo '<div class="sideinfo-box">';
 echo '<div class="sideinfo-title">';
-echo 'Most Played Champions:';
+echo 'Most Played Champions: ('.count($champ).'/'.$totalchampions.')';
 echo '</div>';
 
 $k = 0;
@@ -58,8 +73,8 @@ foreach($champ as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -104,8 +119,8 @@ foreach($lane as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getLaneIMG($row['correctlane'], 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -152,8 +167,8 @@ foreach($top as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -200,8 +215,8 @@ foreach($jungle as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -248,8 +263,8 @@ foreach($mid as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -296,8 +311,8 @@ foreach($adc as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -344,8 +359,8 @@ foreach($support as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getChampionIMG($row['pic'], $row['name'], $ddver_latest, 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -371,8 +386,8 @@ foreach($team as $row) {
     echo '<div class="sideinfo-row">';
     echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
     echo '<div class="sideinfo-row-pic">'.getTeamIMG($row['team'], 40, 40).'</div>';
-    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
-    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span> / ';
+    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span> / ';
     echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
     echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
     echo '</div>';
@@ -381,6 +396,33 @@ foreach($team as $row) {
     echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
     echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
     echo '</div>';
+    echo '</div>';
+    $i++;
+}
+echo '</div>';
+
+echo '<div class="sideinfo-box">';
+echo '<div class="sideinfo-title">';
+echo 'Premades:';
+echo '</div>';
+
+$k = 8;
+$i = 0;
+echo '<div style="display: none" id="si-'.$k.'-total">'.count($premade).'</div>';
+foreach($premade as $row) {
+    echo '<div class="sideinfo-rowpremade">';
+//    echo '<div class="sideinfo-row-played">'.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
+    echo '<div class="sideinfo-row-pic"><a href="?r='.$region.'&name='.strtolower(str_replace(' ', '', $row['duo'])).'">'.$row['duo'].'</a> '.$row[0].' Played - '.$row['winrate'].'% Winrate</div>';
+//    echo '<div class="sideinfo-row-kda">'.'<span id="si-'.$k.'-kills-'.$i.'">'.$row['kills'].'</span>/';
+//    echo '<span id="si-'.$k.'-deaths-'.$i.'">'.$row['deaths'].'</span>/';
+//    echo '<span id="si-'.$k.'-assists-'.$i.'">'.$row['assists']. '</span>';
+//    echo '<div>'.round(($row['kills']+$row['assists'])/$row['deaths'],1).':1 KDA'.'</div>';
+//    echo '</div>';
+//    echo '<div class="sideinfo-row-stats">';
+//    echo '<div class="sideinfo-row-damage">'.'Damage: <span id="si-'.$k.'-dmg-'.$i.'">'.$row['damage'].'</span> (<span id="si-'.$k.'-dmgm-'.$i.'">'.$row['dmgm'].'</span>/min)'.'</div>';
+//    echo '<div class="sideinfo-row-gold">'.'Gold: <span id="si-'.$k.'-gold-'.$i.'">'.$row['gold'].'</span> (<span id="si-'.$k.'-goldm-'.$i.'">'.$row['goldm'].'</span>/min)'.'</div>';
+//    echo '<div class="sideinfo-row-cs">'.'CS: <span id="si-'.$k.'-cs-'.$i.'">'.$row['cs'].'</span> (<span id="si-'.$k.'-csm-'.$i.'">'.$row['csm'].'</span>/min)'.'</div>';
+//    echo '</div>';
     echo '</div>';
     $i++;
 }

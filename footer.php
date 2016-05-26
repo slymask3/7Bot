@@ -14,6 +14,7 @@ if($container) {
     echo '</div>';
 }
 ?>
+
 <footer class="footer">
   <div class="container">
     <p class="text-muted">
@@ -34,5 +35,8 @@ if($container) {
     </p>
   </div>
 </footer>
+
+<button id="scrollarrow" class="btn btn-info" onclick="window.scrollTo(0,0)"><i class="fa fa-arrow-up"></i></button>
+
 </body>
 </html>
