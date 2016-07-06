@@ -1,7 +1,7 @@
 <?php
 $imgerr = "this.src='assets/error.png'";
 $websitename = '7 Bot';
-$ddver_latest = '6.10.1';
+$ddver_latest = '6.13.1';
 $totalchampions = 131;
 include('hidden.php');
 

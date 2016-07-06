@@ -25,7 +25,7 @@ function getClass(i, sort) {
 }
 
 function getClassColor(i, sort, avg) {
-    if(parseInt(document.getElementById("game-number-"+i).getElementsByClassName(sort)[0].innerHTML) >= avg) {
+    if(parseInt(document.getElementById("game-number-"+i).getElementsByClassName(sort)[0].innerHTML.replace(',', '')) >= avg) {
         return " aboveavg";
     } else {
         return " belowavg";
@@ -33,7 +33,7 @@ function getClassColor(i, sort, avg) {
 }
 
 function getClassColorI(i, sort, avg) {
-    if(parseInt(document.getElementById("game-number-"+i).getElementsByClassName(sort)[0].innerHTML) >= avg) {
+    if(parseInt(document.getElementById("game-number-"+i).getElementsByClassName(sort)[0].innerHTML.replace(',', '')) >= avg) {
         return " belowavg";
     } else {
         return " aboveavg";
@@ -45,7 +45,7 @@ function hideTopBar() {
 }
 
 function getColor(id ,avg) {
-    if(parseInt(document.getElementById(id).innerHTML) >= avg) {
+    if(parseInt(document.getElementById(id).innerHTML.replace(',', '')) >= avg) {
         return "aboveavg";
     } else {
         return "belowavg";
@@ -53,7 +53,7 @@ function getColor(id ,avg) {
 }
 
 function getColorI(id ,avg) {
-    if(parseInt(document.getElementById(id).innerHTML) >= avg) {
+    if(parseInt(document.getElementById(id).innerHTML.replace(',', '')) >= avg) {
         return "belowavg";
     } else {
         return "aboveavg";

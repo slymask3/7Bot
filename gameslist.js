@@ -17,7 +17,10 @@ var options = {
                   'sort-date',
                   'sort-kda',
                   'sort-7bs',
-                  'sort-cc' ],
+                  'sort-cc',
+                  'sort-wg',
+                  'sort-wd',
+                  'sort-wp' ],
     page: document.getElementById("pages").value,
     plugins: [
       ListPagination({})
@@ -43,6 +46,9 @@ function fullAvg() {
     csma = 0;
     score = 0;
     cc = 0;
+    wg = 0;
+    wd = 0;
+    wp = 0;
     for(i=0; i<userList.items.length; i++) {
         kpa += parseFloat(userList.items[i]['_values']['sort-kp']);
         dpa += parseFloat(userList.items[i]['_values']['sort-dp']);
@@ -58,6 +64,9 @@ function fullAvg() {
         csma += parseFloat(userList.items[i]['_values']['sort-csm']);
         score += parseFloat(userList.items[i]['_values']['sort-7bs']);
         cc += parseFloat(userList.items[i]['_values']['sort-cc']);
+        wg += parseFloat(userList.items[i]['_values']['sort-wg']);
+        wd += parseFloat(userList.items[i]['_values']['sort-wd']);
+        wp += parseFloat(userList.items[i]['_values']['sort-wp']);
     }
     kpa /= userList.items.length;
     dpa /= userList.items.length;
@@ -73,6 +82,9 @@ function fullAvg() {
     csma /= userList.items.length;
     score /= userList.items.length;
     cc /= userList.items.length;
+    wg /= userList.items.length;
+    wd /= userList.items.length;
+    wp /= userList.items.length;
 
     lengthat = getTime(lengtha);
 
@@ -90,6 +102,9 @@ function fullAvg() {
     document.getElementById("avg-csm").innerHTML = csma.toFixed(2);
     document.getElementById("avg-7bs").innerHTML = score.toFixed(2);
     document.getElementById("avg-cc").innerHTML = cc.toFixed(2);
+    document.getElementById("avg-wg").innerHTML = wg.toFixed(2);
+    document.getElementById("avg-wd").innerHTML = wd.toFixed(2);
+    document.getElementById("avg-wp").innerHTML = wp.toFixed(2);
 
     document.getElementById("avg-kda").innerHTML = ((ka+aa)/da).toFixed(2);
 
@@ -126,6 +141,9 @@ userList.on("updated", function(){
     csmaf = 0;
     scoref = 0;
     ccf = 0;
+    wgf = 0;
+    wdf = 0;
+    wpf = 0;
     for(i=0; i<userList.matchingItems.length; i++) {
         kpaf += parseFloat(userList.matchingItems[i]['_values']['sort-kp']);
         dpaf += parseFloat(userList.matchingItems[i]['_values']['sort-dp']);
@@ -141,6 +159,9 @@ userList.on("updated", function(){
         csmaf += parseFloat(userList.matchingItems[i]['_values']['sort-csm']);
         scoref += parseFloat(userList.matchingItems[i]['_values']['sort-7bs']);
         ccf += parseFloat(userList.matchingItems[i]['_values']['sort-cc']);
+        wgf += parseFloat(userList.matchingItems[i]['_values']['sort-wg']);
+        wdf += parseFloat(userList.matchingItems[i]['_values']['sort-wd']);
+        wpf += parseFloat(userList.matchingItems[i]['_values']['sort-wp']);
     }
     kpaf /= userList.matchingItems.length;
     dpaf /= userList.matchingItems.length;
@@ -156,6 +177,9 @@ userList.on("updated", function(){
     csmaf /= userList.matchingItems.length;
     scoref /= userList.matchingItems.length;
     ccf /= userList.matchingItems.length;
+    wgf /= userList.matchingItems.length;
+    wdf /= userList.matchingItems.length;
+    wpf /= userList.matchingItems.length;
 
     lengthatf = getTime(lengthaf);
 
@@ -195,6 +219,9 @@ userList.on("updated", function(){
     document.getElementById("avg-csm-f").innerHTML = csmaf.toFixed(2);
     document.getElementById("avg-7bs-f").innerHTML = scoref.toFixed(2);
     document.getElementById("avg-cc-f").innerHTML = ccf.toFixed(2);
+    document.getElementById("avg-wg-f").innerHTML = wgf.toFixed(2);
+    document.getElementById("avg-wd-f").innerHTML = wdf.toFixed(2);
+    document.getElementById("avg-wp-f").innerHTML = wpf.toFixed(2);
 
     document.getElementById("avg-kda-f").innerHTML = ((kaf+aaf)/daf).toFixed(2);
 
